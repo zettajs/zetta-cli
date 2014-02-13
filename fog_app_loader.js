@@ -1,4 +1,5 @@
 var querystring = require('querystring');
+var Scientist = require('./scientist');
 
 var FogAppLoader = module.exports = function(server) {
   this.server = server;
@@ -16,16 +17,21 @@ FogAppLoader.prototype.load = function(app) {
 
   var resources = this.buildExposedResources();
 
-  this.server.loadApp({ path: this.path, resources: resources });
+  this.server.loadApp(resources);
 };
 
 FogAppLoader.prototype.provision = function(id) {
   var device = this.server.findDevice(id);
   this.machines.push(device);
+  return device;
 };
 
 FogAppLoader.prototype.expose = function(path, machine) {
-  this.exposed[path] = machine;
+  if (typeof machine === 'function') {
+    machine = Scientist.configure(machine);
+  }
+
+  this.exposed[this.path + path] = machine;
 };
 
 FogAppLoader.prototype.buildExposedResources = function() {
@@ -34,7 +40,7 @@ FogAppLoader.prototype.buildExposedResources = function() {
   var self = this;
   Object.keys(this.exposed).forEach(function(path) {
     var machine = self.exposed[path];
-    var resource = function() {
+    var Resource = function() {
       this.actions = [];
 
       var self = this;
@@ -46,35 +52,39 @@ FogAppLoader.prototype.buildExposedResources = function() {
         var action = {
           name: type,
           method: 'POST',
-          href: env.helpers.url.current(),
+          href: null,
           fields: fields
         };
 
         self.actions.push(action);
       });
-    }
+    };
 
-    resource.prototype.init = function(config) {
+    Resource.prototype.init = function(config) {
       config
         .path(path)
         .produces('application/vnd.siren+json')
-        .consumes('application/x-www-form-urlencoded');
+        .consumes('application/x-www-form-urlencoded')
         .get('/', this.show)
         .post('/', this.action);
     };
 
-    resource.prototype.show = function(env, next) {
+    Resource.prototype.show = function(env, next) {
       var entity = {
         properties: machine.properties,
         actions: this.actions,
         links: [{ rel: ['self'], href: env.helpers.url.current() }]
       };
 
+      entity.actions.forEach(function(action) {
+        action.href = env.helpers.url.current();
+      });
+
       env.response.body = entity;
       next(env);
     };
 
-    resource.prototype.action = function(env, next) {
+    Resource.prototype.action = function(env, next) {
       var self = this;
       env.request.getBody(function(err, body) {
         body = querystring.parse(body.toString());
@@ -84,35 +94,46 @@ FogAppLoader.prototype.buildExposedResources = function() {
           return next(env);
         }
 
-        var action = this.actions.filter(function(action) {
+        var action = self.actions.filter(function(action) {
           return (action.name === body.action);
         });
 
-        if (!action) {
+        if (!action || !action.length) {
           env.response.statusCode = 400;
           return next(env);
         }
 
+        action = action[0];
+
         var args = [action.name];
 
-        action.fields.forEach(function(field) {
-          args.push(body[field.name]);
-        });
+        if (action.fields && action.fields.length) {
+          action.fields.forEach(function(field) {
+            if (field.name !== 'action') {
+              args.push(body[field.name]);
+            }
+          });
+        }
 
-        machine.emit.apply(machine, args);
+        //machine.apply(machine, args);
+        //machine.emit.apply(machine, args);
+        machine.call.apply(machine, args);
 
         var entity = {
           properties: machine.properties,
-          actions: this.actions,
+          actions: self.actions,
           links: [{ rel: ['self'], href: env.helpers.url.current() }]
         };
 
+        entity.actions.forEach(function(action) {
+          action.href = env.helpers.url.current();
+        });
         env.response.body = entity;
         next(env);
       });
     };
 
-    resources.push(resource);
+    resources.push(Resource);
   });
 
   return resources;

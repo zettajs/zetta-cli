@@ -14,7 +14,9 @@ exports.configure = function(/* constructor, ...constructorArgs */) {
     machine = constructor;
   }
 
-  var config = MachineConfig.create();
+  var config = MachineConfig.create(machine);
 
   machine.init(config);
+
+  return machine;
 };
