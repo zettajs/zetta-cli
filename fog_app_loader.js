@@ -36,8 +36,9 @@ FogAppLoader.prototype.expose = function(path, machine) {
 
 FogAppLoader.prototype.buildExposedResources = function() {
   var resources = [];
-
   var self = this;
+  var rootPath = self.path;
+
   Object.keys(this.exposed).forEach(function(path) {
     var machine = self.exposed[path];
     var Resource = function() {
@@ -73,11 +74,19 @@ FogAppLoader.prototype.buildExposedResources = function() {
       var entity = {
         properties: machine.properties,
         actions: this.actions,
-        links: [{ rel: ['self'], href: env.helpers.url.current() }]
+        links: [{ rel: ['self'], href: env.helpers.url.current() },
+                { rel: ['index'], href: env.helpers.url.path(rootPath) }]
       };
 
       entity.actions.forEach(function(action) {
         action.href = env.helpers.url.current();
+      });
+
+      entity.actions = entity.actions.filter(function(action) {
+        var allowed = machine.allowed[machine.state];
+        if (allowed && allowed.indexOf(action.name) > -1) {
+          return action;
+        }
       });
 
       env.response.body = entity;
@@ -115,19 +124,26 @@ FogAppLoader.prototype.buildExposedResources = function() {
           });
         }
 
-        //machine.apply(machine, args);
-        //machine.emit.apply(machine, args);
         machine.call.apply(machine, args);
 
         var entity = {
           properties: machine.properties,
           actions: self.actions,
-          links: [{ rel: ['self'], href: env.helpers.url.current() }]
+          links: [{ rel: ['self'], href: env.helpers.url.current() },
+                  { rel: ['index'], href: env.helpers.url.path(rootPath) }]
         };
 
         entity.actions.forEach(function(action) {
           action.href = env.helpers.url.current();
         });
+
+        entity.actions = entity.actions.filter(function(action) {
+          var allowed = machine.allowed[machine.state];
+          if (allowed && allowed.indexOf(action.name) > -1) {
+            return action;
+          }
+        });
+
         env.response.body = entity;
         next(env);
       });
@@ -135,6 +151,40 @@ FogAppLoader.prototype.buildExposedResources = function() {
 
     resources.push(Resource);
   });
+
+  var HomeResource = function() {
+    this.path = self.path;
+  };
+
+  HomeResource.prototype.init = function(config) {
+    config
+      .path(this.path)
+      .produces('application/vnd.siren+json')
+      .get('/', this.show);
+  };
+
+  HomeResource.prototype.show = function(env, next) {
+    var entity = {
+      class: ['home'],
+      entities: [],
+      links: [ { rel: ['self'], href: env.helpers.url.path(this.path) } ]
+    };
+
+    Object.keys(self.exposed).forEach(function(path) {
+      var machine = self.exposed[path];
+      entity.entities.push({
+        class: ['machine'],
+        rel: ['http://rels.elroy.io/machine'],
+        properties: machine.properties,
+        links: [ { rel: ['self'], href: env.helpers.url.path(path) } ]
+      })
+    });
+
+    env.response.body = entity;
+    next(env);
+  };
+
+  resources.push(HomeResource);
 
   return resources;
 };

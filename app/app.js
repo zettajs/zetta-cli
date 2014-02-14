@@ -22,5 +22,6 @@ HelloApp.prototype.init = function(fog) {
     }
   });
 
+  fog.expose('/led', led);
   fog.expose('/photosensor', photosensor);
 };
