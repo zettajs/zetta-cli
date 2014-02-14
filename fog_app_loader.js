@@ -80,6 +80,13 @@ FogAppLoader.prototype.buildExposedResources = function() {
         action.href = env.helpers.url.current();
       });
 
+      entity.actions = entity.actions.filter(function(action) {
+        var allowed = machine.allowed[machine.state];
+        if (allowed && allowed.indexOf(action.name) > -1) {
+          return action;
+        }
+      });
+
       env.response.body = entity;
       next(env);
     };
@@ -128,6 +135,14 @@ FogAppLoader.prototype.buildExposedResources = function() {
         entity.actions.forEach(function(action) {
           action.href = env.helpers.url.current();
         });
+
+        entity.actions = entity.actions.filter(function(action) {
+          var allowed = machine.allowed[machine.state];
+          if (allowed && allowed.indexOf(action.name) > -1) {
+            return action;
+          }
+        });
+
         env.response.body = entity;
         next(env);
       });
