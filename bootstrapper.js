@@ -1,6 +1,10 @@
 var fs = require('fs');
+var path = require('path');
 var argo = require('argo');
 var titan = require('titan');
+var siren = require('argo-formatter-siren');
+
+
 
 var FogServer = require('./fog_server');
 
@@ -19,6 +23,7 @@ var scouts = fs.readdirSync(dir + '/scouts').filter(function(scoutPath) {
 var server = argo()
   .use(titan)
   .allow('*')
+  .format({ directory : path.join(__dirname,'api_formats'), engines: [siren], override: {'application/json': siren}})
   .logger();
 
 var fog = new FogServer(server, scouts);

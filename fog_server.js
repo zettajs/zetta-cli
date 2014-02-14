@@ -1,5 +1,6 @@
 var FogAppLoader = require('./fog_app_loader');
 var Scientist = require('./scientist');
+var DevicesResource = require('./api_resources/devices');
 
 var FogServer = module.exports = function(argo, scouts) {
   this.argo = argo;
@@ -9,6 +10,10 @@ var FogServer = module.exports = function(argo, scouts) {
 
 FogServer.prototype.init = function(cb) {
   var self = this;
+
+  self.argo
+    .add(DevicesResource, self.devices)
+
   var count = 0;
   var max = this.scouts.length;
   this.scouts.forEach(function(scout) {
@@ -24,6 +29,8 @@ FogServer.prototype.init = function(cb) {
       }
     });
   });
+
+
 };
 
 FogServer.prototype.loadApp = function(resources) {
