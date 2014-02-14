@@ -1,19 +1,20 @@
 var fs = require('fs');
+var path = require('path');
 var argo = require('argo');
 var titan = require('titan');
 
 var FogServer = require('./fog_server');
 
-var dir = './app';
+var dir = path.join(__dirname, 'app');
 
-var app = require(dir + '/app');
+var app = require(path.join(dir, 'app'));
 
-var scouts = fs.readdirSync(dir + '/scouts').filter(function(scoutPath) {
+var scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
   if (/^.+\.js$/.test(scoutPath)) {
     return scoutPath;
   }
 }).map(function(scoutPath) {
-  return require(dir + '/scouts/' + scoutPath);
+  return require(path.join(dir, 'scouts', scoutPath));
 });
 
 var server = argo()
