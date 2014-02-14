@@ -3,7 +3,7 @@ var path = require('path');
 var argo = require('argo');
 var titan = require('titan');
 
-var FogServer = require('./fog_server');
+var FogRuntime = require('./fog_runtime');
 
 var dir = path.join(__dirname, 'app');
 
@@ -22,7 +22,7 @@ var server = argo()
   .allow('*')
   .logger();
 
-var fog = new FogServer(server, scouts);
+var fog = new FogRuntime(server, scouts);
 fog.init(function(err) {
   var apps = [app];
   fog.loadApps(apps);
