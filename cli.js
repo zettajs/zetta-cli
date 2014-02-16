@@ -6,6 +6,7 @@ var program = require('commander'),
     spawn = require('child_process').spawn,
     argo = require('argo'),
     titan = require('titan'),
+    siren = require('argo-formatter-siren'),
     FogRuntime = require('./fog_runtime'),
     fs = require('fs');
 
@@ -49,6 +50,7 @@ if(program.run) {
   var server = argo()
     .use(titan)
     .allow('*')
+    .format({ directory : path.join(__dirname,'api_formats'), engines: [siren], override: {'application/json': siren}})
     .logger();
 
   var fog = new FogRuntime(server, scouts);
@@ -56,7 +58,9 @@ if(program.run) {
     var apps = [app];
     fog.loadApps(apps);
 
-    server.listen(3002);
+    server.listen(3002,function(){
+      console.log('elroy now running on http://localhost:3002');
+    });
   });
 
 }
