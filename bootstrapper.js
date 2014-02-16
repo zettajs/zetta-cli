@@ -6,7 +6,7 @@ var siren = require('argo-formatter-siren');
 
 
 
-var FogServer = require('./fog_server');
+var FogRuntime = require('./fog_runtime');
 
 var dir = path.join(__dirname, 'app');
 
@@ -26,7 +26,7 @@ var server = argo()
   .format({ directory : path.join(__dirname,'api_formats'), engines: [siren], override: {'application/json': siren}})
   .logger();
 
-var fog = new FogServer(server, scouts);
+var fog = new FogRuntime(server, scouts);
 fog.init(function(err) {
   var apps = [app];
   fog.loadApps(apps);

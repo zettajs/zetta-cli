@@ -2,13 +2,13 @@ var FogAppLoader = require('./fog_app_loader');
 var Scientist = require('./scientist');
 var DevicesResource = require('./api_resources/devices');
 
-var FogServer = module.exports = function(argo, scouts) {
+var FogRuntime = module.exports = function(argo, scouts) {
   this.argo = argo;
   this.devices = [];
   this.scouts = scouts;
 };
 
-FogServer.prototype.init = function(cb) {
+FogRuntime.prototype.init = function(cb) {
   var self = this;
 
   self.argo
@@ -33,14 +33,14 @@ FogServer.prototype.init = function(cb) {
 
 };
 
-FogServer.prototype.loadApp = function(resources) {
+FogRuntime.prototype.loadApp = function(resources) {
   var self = this;
   resources.forEach(function(resource) {
     self.argo.add(resource);
   });
 };
 
-FogServer.prototype.loadApps = function(apps) {
+FogRuntime.prototype.loadApps = function(apps) {
   var self = this;
   apps.forEach(function(constructor) {
     var app = new constructor();
@@ -49,7 +49,7 @@ FogServer.prototype.loadApps = function(apps) {
   });
 };
 
-FogServer.prototype.findDevice = function(id) {
+FogRuntime.prototype.findDevice = function(id) {
   var device = this.devices.filter(function(device) {
     return device.name === id;
   });
