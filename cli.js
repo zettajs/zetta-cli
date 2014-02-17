@@ -67,5 +67,5 @@ if(program.run) {
 
 if(program.open) {
   var app = path.basename(process.cwd());
-  var o = spawn('open', ['http://siren-api-browser.herokuapp.com/#/entity?url=http:%2F%2Flocalhost:3002%2F'+app]);
+  var o = spawn('open', ['http://siren-api-browser.herokuapp.com/#/entity?url=http:%2F%2Flocalhost:3002%2Fhello']);
 }
