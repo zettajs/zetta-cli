@@ -17,19 +17,17 @@ FogRuntime.prototype.init = function(cb) {
   var count = 0;
   var max = this.scouts.length;
   this.scouts.forEach(function(scout) {
-    scout.list(function(err, devices) {
-      devices.forEach(function(device) {
-        var machine = Scientist.configure(device);
-        self.devices.push(machine);
-      });
 
-      count++;
-      if (count === max) {
-        cb();
-      }
+    scout.on('discover', function(device) {
+      var machine = Scientist.configure(device);
+      self.devices.push(machine);
     });
-  });
 
+    count++;
+    if (count == max) {
+      cb();
+    }
+  });
 
 };
 
