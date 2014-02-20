@@ -14,7 +14,6 @@ DirectoryScout.prototype.init = function() {
   fs.readdir(self.directory, function(err, files) {
     var drivers = files.filter(function(file) {
       if (/^.+\.js$/.test(file)) {
-        console.log(file);
         return file;
       }
     }).forEach(function(file) {

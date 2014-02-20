@@ -43,12 +43,19 @@ FogRuntime.prototype.loadApp = function(resources) {
   });
 };
 
-FogRuntime.prototype.loadApps = function(apps) {
+FogRuntime.prototype.loadApps = function(apps, cb) {
   var self = this;
+  var count = 0;
+  var length = apps.length;
   apps.forEach(function(constructor) {
     var app = new constructor();
     var loader = new FogAppLoader(self);
-    loader.load(app);
+    loader.load(app, function() {
+      count++;
+      if (count === length) {
+        cb();
+      }
+    });
   });
 };
 
@@ -58,14 +65,12 @@ FogRuntime.prototype.get = function(id, cb) {
   });
 
   if(device.length) {
-    cb(null, device[0]);
+    setImmediate(function() { cb(null, device[0]); });
   } else {
     //cb(new Error('Device not found.'));
     this.on('deviceready', function(device){
-      // console.log(device);
-      // console.log(id);
       if(device.name === id) {
-        cb(null, device);
+        setImmediate(function() { cb(null, device); });
       }
     });
   }

@@ -9,7 +9,7 @@ var FogAppLoader = module.exports = function(server) {
   this.exposed = {};
 };
 
-FogAppLoader.prototype.load = function(app) {
+FogAppLoader.prototype.load = function(app, cb) {
   this.app = app;
   this.path = '/' + (this.app.name || '');
   var self = this;
@@ -17,6 +17,7 @@ FogAppLoader.prototype.load = function(app) {
     var resources = self.buildExposedResources();
 
     self.server.loadApp(resources);
+    cb();
   });
 };
 
@@ -38,17 +39,14 @@ FogAppLoader.prototype.expose = function(machine, path) {
   }
 
   path = path || '/' + machine.name;
-  console.log(this.path + path);
 
   this.exposed[this.path + path] = machine;
 };
 
 FogAppLoader.prototype.buildExposedResources = function() {
-  console.log('Called buildExposedResources');
   var resources = [];
   var self = this;
   var rootPath = self.path;
-  console.log('exposed', this.exposed);
   Object.keys(this.exposed).forEach(function(path) {
 
     var machine = self.exposed[path];
@@ -73,7 +71,6 @@ FogAppLoader.prototype.buildExposedResources = function() {
     };
 
     Resource.prototype.init = function(config) {
-      console.log('PATHFUCK:', path);
       config
         .path(path)
         .produces('application/vnd.siren+json')
