@@ -34,8 +34,8 @@ MachineConfig.prototype.map = function(type, handler, fields) {
   return this;
 };
 
-MachineConfig.prototype.device = function(subdevices) {
-  this.devices.push(subdevices);
+MachineConfig.prototype.devices = function(subdevices) {
+  this.devices.concat(subdevices);
   return this;
 };
 
