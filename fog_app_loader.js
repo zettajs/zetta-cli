@@ -47,6 +47,37 @@ FogAppLoader.prototype.buildExposedResources = function() {
   var resources = [];
   var self = this;
   var rootPath = self.path;
+
+  var AdequateResource = function() {
+    this.path = rootPath;
+  };
+
+  AdequateResource.prototype.init = function(config) {
+    config.path(this.path)
+      .produces('application/vnd.siren+json')
+      .consumes('application/x-www-form-urlencoded')
+      .get('/', this.home)
+      .get('/{splat: (.*)}', this.show)
+      .post('/{splat: (.*)}', this.action)
+  };
+
+  AdequateResource.prototype.home = function(env, next) {
+  };
+
+  AdequateResource.prototype.show = function(env, next) {
+  };
+
+  AdequateResource.prototype.action = function(env, next) {
+  };
+
+  // TODO: Create a function out of this crap below.  Find the path
+  // dynamically in AdequateResource#show,#action.  Return appropriate response
+  // based on logic below.  Wire up #home.
+  //
+  // 1. Stroll over to Jazz Convenience Store.
+  // 2. Grab a loosey.
+  // 3. Light it up. Life is good.
+
   Object.keys(this.exposed).forEach(function(path) {
 
     var machine = self.exposed[path];
