@@ -4,6 +4,7 @@ var MachineConfig = module.exports = function(machine) {
   this.machine = machine;
   this.transitions = {};
   this.allowed = {};
+  this.devices = [];
   this.emitter = new EventEmitter();
 
   var self = this;
@@ -30,6 +31,11 @@ var MachineConfig = module.exports = function(machine) {
 
 MachineConfig.prototype.map = function(type, handler, fields) {
   this.transitions[type] = { handler: handler, fields: fields };
+  return this;
+};
+
+MachineConfig.prototype.devices = function(subdevices) {
+  this.devices.concat(subdevices);
   return this;
 };
 
