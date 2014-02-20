@@ -7,11 +7,11 @@ HelloApp.prototype.init = function(elroy, cb) {
 
     elroy.get('led', function(err, led) {
       led.on('turn-on', function() {
-        console.log('on');
+        console.log('turning on');
       });
 
       led.on('turn-off', function() {
-        console.log('off');
+        console.log('turning off');
       });
 
       photosensor.on('change', function(value) {

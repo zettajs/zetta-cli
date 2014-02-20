@@ -29,7 +29,7 @@ var server = argo()
 var fog = new FogRuntime(server, scouts);
 fog.init(function(err) {
   var apps = [app];
-  fog.loadApps(apps);
-
-  server.listen(3002);
+  fog.loadApps(apps, function() {
+    server.listen(3002);
+  });
 });
