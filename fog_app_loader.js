@@ -12,34 +12,45 @@ var FogAppLoader = module.exports = function(server) {
 FogAppLoader.prototype.load = function(app) {
   this.app = app;
   this.path = '/' + (this.app.name || '');
+  var self = this;
+  app.init(this, function(){
+    var resources = self.buildExposedResources();
 
-  app.init(this);
-
-  var resources = this.buildExposedResources();
-
-  this.server.loadApp(resources);
+    self.server.loadApp(resources);
+  });
 };
 
-FogAppLoader.prototype.provision = function(id) {
-  var device = this.server.findDevice(id);
-  this.machines.push(device);
-  return device;
+FogAppLoader.prototype.get = function(id, cb) {
+  var self = this;
+  var device = this.server.get(id, function(err, device){
+    if(err) {
+      cb(err);
+    } else {
+      self.machines.push(device);
+      cb(null, device);
+    }
+  });
 };
 
-FogAppLoader.prototype.expose = function(path, machine) {
+FogAppLoader.prototype.expose = function(machine, path) {
   if (typeof machine === 'function') {
     machine = Scientist.configure(machine);
   }
+
+  path = path || '/' + machine.name;
+  console.log(this.path + path);
 
   this.exposed[this.path + path] = machine;
 };
 
 FogAppLoader.prototype.buildExposedResources = function() {
+  console.log('Called buildExposedResources');
   var resources = [];
   var self = this;
   var rootPath = self.path;
-
+  console.log('exposed', this.exposed);
   Object.keys(this.exposed).forEach(function(path) {
+
     var machine = self.exposed[path];
     var Resource = function() {
       this.actions = [];
@@ -62,6 +73,7 @@ FogAppLoader.prototype.buildExposedResources = function() {
     };
 
     Resource.prototype.init = function(config) {
+      console.log('PATHFUCK:', path);
       config
         .path(path)
         .produces('application/vnd.siren+json')
