@@ -1,4 +1,5 @@
 var querystring = require('querystring');
+var url = require('url');
 
 exports.create = function(loader) {
   function buildActions(machine) {
@@ -30,27 +31,43 @@ exports.create = function(loader) {
     this.path = loader.path;
   };
 
-  function buildEntity(env, machine, actions) {
+  function buildEntity(env, machine, actions, selfPath) {
+    selfPath = selfPath || env.helpers.url.current();
+
     var entity = {
+      class: [machine.name],
       properties: machine.properties,
+      entities: undefined,
       actions: actions,
-      links: [{ rel: ['self'], href: env.helpers.url.current() },
+      links: [{ rel: ['self'], href: selfPath },
               { rel: ['index'], href: env.helpers.url.path(loader.path) }]
     };
 
-    machine.devices.forEach(function(device) {
-    });
+    if (machine._devices.length) {
+      entity.entities = machine._devices.filter(function(device) {
+        var path = env.helpers.url.join(device.name);
 
-    entity.actions.forEach(function(action) {
-      action.href = env.helpers.url.current();
-    });
+        if (loader.exposed[url.parse(path).path]) {
+          return device;
+        }
+      }).map(function(device) {
+        var path = env.helpers.url.join(device.name);
+        return buildEntity(env, device, null, path)
+      });
+    }
 
-    entity.actions = entity.actions.filter(function(action) {
-      var allowed = machine.allowed[machine.state];
-      if (allowed && allowed.indexOf(action.name) > -1) {
-        return action;
-      }
-    });
+    if (entity.actions) {
+      entity.actions.forEach(function(action) {
+        action.href = env.helpers.url.current();
+      });
+
+      entity.actions = entity.actions.filter(function(action) {
+        var allowed = machine.allowed[machine.state];
+        if (allowed && allowed.indexOf(action.name) > -1) {
+          return action;
+        }
+      });
+    }
 
     return entity;
   }
