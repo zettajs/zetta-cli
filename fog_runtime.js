@@ -1,39 +1,133 @@
+var fs = require('fs');
+var path = require('path');
+
 var FogAppLoader = require('./fog_app_loader');
 var Scientist = require('./scientist');
 var DevicesResource = require('./api_resources/devices');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
+
+function Registry(){
+  this.devices = [];
+  this.json_devices = [];
+  this.path = path.join(process.cwd(),'registry.json');
+};
+
+Registry.prototype.load = function(cb) {
+  var self = this;
+
+  fs.readFile(this.path,function(err,buf){    
+    if(err)
+      return cb(err);
+
+    try{
+      var data = JSON.parse(buf.toString());
+
+      if(data.devices)
+        self.json_devices = data.devices;
+      cb();
+    }catch(err){
+      cb(err);
+    }
+  });
+};
+
+Registry.prototype.save = function(cb) {
+  var devices = this.devices.map(function(device){
+    return {
+      type : device.type,
+      name : device.name,
+      data : device.data
+    };
+  });
+
+  var data = JSON.stringify({devices : devices});
+  fs.writeFile(this.path, data,cb);
+};
+
+Registry.prototype.add = function(machine,cb) {
+  this.devices.push(machine);
+  this.save(cb);
+};
+
+Registry.prototype.setupDevice = function() {
+  var machine = Scientist.configure.apply(null,arguments);
+  this.devices.push(machine);
+};
+
+
+
+
+
+
+
+
+
 var FogRuntime = module.exports = function(argo, scouts) {
   this.argo = argo;
-  this.devices = [];
   this.scouts = scouts;
+  this.registry = new Registry();
 };
 util.inherits(FogRuntime, EventEmitter);
+
+FogRuntime.prototype.deviceInRegistry = function(device,compare){
+  var found = this.registry.devices.filter(function(b){
+    if(b.type !== device.type)
+      return false;
+
+    // scout does not provide a compare func.
+    if(!compare)
+      return device.name === b.name;
+
+    return compare(device,b)
+  });
+  return found.length !== 0;
+};
+
 
 FogRuntime.prototype.init = function(cb) {
   var self = this;
 
   self.argo
-    .add(DevicesResource, self.devices)
+    .add(DevicesResource, self.registry.devices)
 
+  this.registry.load(function(err){
+    if(err){
+      console.log(err);
+      console.log('Failed to load registry. Creating new one.');
+    }
+    self.loadScouts(cb);
+  });
+};
+
+FogRuntime.prototype.loadScouts = function(cb) {
+  var self = this;
   var count = 0;
   var max = this.scouts.length;
   this.scouts.forEach(function(scout) {
     scout = new scout();
-    scout.init();
-    scout.on('discover', function(device) {
-      var machine = Scientist.configure(device);
-      self.devices.push(machine);
-      self.emit('deviceready', machine);
+    scout.init(self.registry,function(err){
+      if(err)
+        throw err;
+
+      scout.on('discover', function() {
+        var machine = Scientist.configure.apply(null,arguments);
+        var found = self.deviceInRegistry(machine,scout.compare);
+        if(!found){
+          self.registry.add(machine,function(){
+            self.emit('deviceready', machine);
+            self.emit('device:'+machine.type+":deviceready", machine);  
+          });
+        }
+      });
+
+      count++;
+      if (count == max) {
+        cb();
+      }
     });
-
-    count++;
-    if (count == max) {
-      cb();
-    }
   });
-
 };
 
 FogRuntime.prototype.loadApp = function(resources) {
@@ -59,15 +153,32 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
   });
 };
 
+FogRuntime.prototype.find = function(query, cb) {
+  var q = query.split(':');
+  if(q[0] === 'device'){
+    var type = q[1];
+    var search = q[2];
+    var ret = this.registry.devices.filter(function(device){
+      if(type === device.type){
+        if(search === '*' || search === this.name)
+          return true;
+        return false;
+      }
+    });
+    return cb(null,ret);  
+  }
+  cb(null,[]);
+};
+
 FogRuntime.prototype.get = function(id, cb) {
-  var device = this.devices.filter(function(device) {
+
+  var device = this.registry.devices.filter(function(device) {
     return device.name === id;
   });
 
   if(device.length) {
     setImmediate(function() { cb(null, device[0]); });
-  } else {
-    //cb(new Error('Device not found.'));
+  } else {  
     this.on('deviceready', function(device){
       if(device.name === id) {
         setImmediate(function() { cb(null, device); });

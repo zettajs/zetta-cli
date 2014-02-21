@@ -3,9 +3,8 @@ var HelloApp = module.exports = function() {
 };
 
 HelloApp.prototype.init = function(elroy, cb) {
-  elroy.get('photosensor', function(err, photosensor) {
-
-    elroy.get('led', function(err, led) {
+  elroy.get('joes-office-photosensor', function(err, photosensor) {
+    elroy.get('joes-office-led', function(err, led) {
       led.on('turn-on', function() {
         console.log('turning on');
       });

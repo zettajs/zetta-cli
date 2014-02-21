@@ -9,13 +9,20 @@ var FogAppLoader = module.exports = function(server) {
   this.exposed = {};
 };
 
+FogAppLoader.prototype.on = function() {
+  this.server.on.apply(this.server,arguments);
+};
+FogAppLoader.prototype.find = function() {
+  this.server.find.apply(this.server,arguments);
+};
+
 FogAppLoader.prototype.load = function(app, cb) {
   this.app = app;
   this.path = '/' + (this.app.name || '');
   var self = this;
+
   app.init(this, function(){
     var resources = self.buildExposedResources();
-
     self.server.loadApp(resources);
     cb();
   });
@@ -213,7 +220,7 @@ FogAppLoader.prototype.buildExposedResources = function() {
     Object.keys(self.exposed).forEach(function(path) {
       var machine = self.exposed[path];
       entity.entities.push({
-        class: ['machine'],
+        class: ['machine',machine.type],
         rel: ['http://rels.elroy.io/machine'],
         properties: machine.properties,
         links: [ { rel: ['self'], href: env.helpers.url.path(path) } ]

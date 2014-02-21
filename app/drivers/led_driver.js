@@ -1,5 +1,7 @@
 var LEDDriver = module.exports = function() {
-  this.name = 'led';
+  this.type = 'led';
+  this.name = "joes-office-led";
+  this.data = {};
   this.state = 'off';
 };
 
