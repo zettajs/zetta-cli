@@ -2,7 +2,7 @@ var HelloApp = module.exports = function() {
   this.name = 'hello';
 };
 
-HelloApp.prototype.init = function(elroy, cb) {
+HelloApp.prototype.init = function(elroy) {
   elroy.get('photosensor', function(err, photosensor) {
 
     elroy.get('led', function(err, led) {
@@ -29,7 +29,6 @@ HelloApp.prototype.init = function(elroy, cb) {
       });
 
       elroy.expose(led);
-      cb();
     });
 
     elroy.expose(photosensor);

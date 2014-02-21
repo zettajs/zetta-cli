@@ -36,11 +36,8 @@ FogRuntime.prototype.init = function(cb) {
 
 };
 
-FogRuntime.prototype.loadApp = function(resources) {
-  var self = this;
-  resources.forEach(function(resource) {
-    self.argo.add(resource);
-  });
+FogRuntime.prototype.loadApp = function(resource) {
+  this.argo.add(resource);
 };
 
 FogRuntime.prototype.loadApps = function(apps, cb) {
@@ -50,12 +47,12 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
   apps.forEach(function(constructor) {
     var app = new constructor();
     var loader = new FogAppLoader(self);
-    loader.load(app, function() {
-      count++;
-      if (count === length) {
-        cb();
-      }
-    });
+    loader.load(app);
+
+    count++;
+    if (count === length) {
+      cb();
+    }
   });
 };
 
