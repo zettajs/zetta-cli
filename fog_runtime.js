@@ -35,7 +35,6 @@ FogRuntime.prototype.init = function(cb) {
 
   this.registry.load(function(err){
     if(err){
-      console.log(err);
       console.log('Failed to load registry. Creating new one.');
     }
     self.loadScouts(cb);
@@ -58,7 +57,6 @@ FogRuntime.prototype.loadScouts = function(cb) {
         if(!found){
           self.registry.add(machine,function(){
             self.emit('deviceready', machine);
-            self.emit('device:'+machine.type+":deviceready", machine);  
           });
         }
       });
