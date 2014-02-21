@@ -5,7 +5,6 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var Registry = require('./registry');
 
-
 var FogRuntime = module.exports = function(argo, scouts) {
   this.argo = argo;
   this.scouts = scouts;
