@@ -35,7 +35,7 @@ exports.create = function(loader) {
     selfPath = selfPath || env.helpers.url.current();
 
     var entity = {
-      class: [machine.name],
+      class: [machine.type],
       properties: machine.properties,
       entities: undefined,
       actions: actions,
