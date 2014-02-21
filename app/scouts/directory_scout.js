@@ -1,18 +1,26 @@
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 
-var directory = path.join(__dirname, '..', 'drivers');
+var DirectoryScout = module.exports = function() {
+  EventEmitter.call(this);
+  this.directory = path.join(__dirname, '..', 'drivers');
+};
+util.inherits(DirectoryScout, EventEmitter);
 
-exports.list = function(cb) {
-  fs.readdir(directory, function(err, files) {
+DirectoryScout.prototype.init = function() {
+  var self = this;
+  fs.readdir(self.directory, function(err, files) {
     var drivers = files.filter(function(file) {
       if (/^.+\.js$/.test(file)) {
         return file;
       }
-    }).map(function(file) {
-      return require(path.join(directory, file));
+    }).forEach(function(file) {
+      var p = path.join(self.directory, file);
+      var device = require(path.join(self.directory, file));
+      self.emit('discover', device);
     });
 
-    cb(null, drivers);
   });
 };

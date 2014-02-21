@@ -4,7 +4,7 @@ var MachineConfig = module.exports = function(machine) {
   this.machine = machine;
   this.transitions = {};
   this.allowed = {};
-  this.devices = [];
+  this._devices = [];
   this.emitter = new EventEmitter();
 
   var self = this;
@@ -22,11 +22,13 @@ var MachineConfig = module.exports = function(machine) {
 
   this.machine.properties = properties;
 
+  // TODO: Namespace this as something weird so there's no accidental override.
   this.machine.transitions = this.transitions;
   this.machine.allowed = this.allowed;
   this.machine.call = this.call.bind(this);
   this.machine.emit = this.emitter.emit.bind(this.emitter);
-
+  this.machine.devices = this.devices.bind(this);
+  this.machine._devices = this._devices;
 };
 
 MachineConfig.prototype.map = function(type, handler, fields) {
@@ -35,7 +37,8 @@ MachineConfig.prototype.map = function(type, handler, fields) {
 };
 
 MachineConfig.prototype.devices = function(subdevices) {
-  this.devices.concat(subdevices);
+  this._devices = this._devices.concat(subdevices);
+  this.machine._devices = this._devices;
   return this;
 };
 
