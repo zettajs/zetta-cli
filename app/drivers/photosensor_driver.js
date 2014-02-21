@@ -1,5 +1,7 @@
 var PhotosensorDriver = module.exports = function() {
-  this.name = 'photosensor';
+  this.type = 'photosensor';
+  this.name = "joes-office-photosensor";
+  this.data = {};
   this.state = 'on';
   this.value = 0;
 };

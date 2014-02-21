@@ -56,7 +56,7 @@ if(program.run) {
   var fog = new FogRuntime(server, scouts);
   fog.init(function(err) {
     var apps = [app];
-    fog.loadApps(apps);
+    fog.loadApps(apps,function(){});
 
     server.listen(3002,function(){
       console.log('elroy now running on http://localhost:3002');

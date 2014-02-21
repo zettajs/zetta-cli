@@ -9,7 +9,9 @@ var DirectoryScout = module.exports = function() {
 };
 util.inherits(DirectoryScout, EventEmitter);
 
-DirectoryScout.prototype.init = function() {
+DirectoryScout.prototype.init = function(registry,cb) {
+  cb();
+  
   var self = this;
   fs.readdir(self.directory, function(err, files) {
     var drivers = files.filter(function(file) {
@@ -21,6 +23,9 @@ DirectoryScout.prototype.init = function() {
       var device = require(path.join(self.directory, file));
       self.emit('discover', device);
     });
-
+    
   });
 };
+
+
+
