@@ -90,19 +90,13 @@ FogRuntime.prototype.loadApp = function(resource) {
   this.argo.add(resource);
 };
 
-FogRuntime.prototype.loadApps = function(apps, cb) {
+FogRuntime.prototype.loadApps = function(apps) {
   var self = this;
-  var count = 0;
   var length = apps.length;
   apps.forEach(function(constructor) {
     var app = new constructor();
     var loader = new FogAppLoader(self);
     loader.load(app);
-
-    count++;
-    if (count === length) {
-      cb();
-    }
   });
 };
 
