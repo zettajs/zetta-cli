@@ -47,25 +47,42 @@ FogRuntime.prototype.loadScouts = function(cb) {
   var max = this.scouts.length;
   this.scouts.forEach(function(scout) {
     scout = new scout();
-    scout.init(self.registry,function(err){
+
+    scout.on('discover', function() {
+      var machine = Scientist.configure.apply(null,arguments);
+      var found = self.deviceInRegistry(machine,scout.compare);
+      if(!found)
+        self.registry.add(machine,function(){});
+
+      self.emit('deviceready', machine);
+    });
+
+    scout.init(function(err){
       if(err)
         throw err;
 
-      scout.on('discover', function() {
-        var machine = Scientist.configure.apply(null,arguments);
-        var found = self.deviceInRegistry(machine,scout.compare);
-        if(!found){
-          self.registry.add(machine,function(){
-            self.emit('deviceready', machine);
-          });
-        }
-      });
+      setImmediate(function(){
+        self.registry.json_devices.forEach(function(device){
+          if(scout.drivers.indexOf(device.type) === -1)
+            return;
 
-      count++;
-      if (count == max) {
-        cb();
-      }
+          var ret = scout.provision(device);
+          if(!ret)
+            return;
+
+          var machine = Scientist.configure.apply(null,ret);
+          self.registry.devices.push(machine);
+          self.emit('deviceready', machine);
+        });
+      });
+      
     });
+
+    count++;
+    if (count == max) {
+      cb();
+    }
+
   });
 };
 
@@ -87,23 +104,6 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
       cb();
     }
   });
-};
-
-FogRuntime.prototype.find = function(query, cb) {
-  var q = query.split(':');
-  if(q[0] === 'device'){
-    var type = q[1];
-    var search = q[2];
-    var ret = this.registry.devices.filter(function(device){
-      if(type === device.type){
-        if(search === '*' || search === this.name)
-          return true;
-        return false;
-      }
-    });
-    return cb(null,ret);  
-  }
-  cb(null,[]);
 };
 
 FogRuntime.prototype.get = function(id, cb) {

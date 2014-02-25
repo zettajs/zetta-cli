@@ -22,11 +22,6 @@ FogAppLoader.prototype.on = function() {
   this.server.on.apply(this.server,arguments);
 };
 
-// query in registry
-FogAppLoader.prototype.find = function() {
-  this.server.find.apply(this.server,arguments);
-};
-
 FogAppLoader.prototype.get = function(id, cb) {
   var self = this;
   var device = this.server.get(id, function(err, device){
