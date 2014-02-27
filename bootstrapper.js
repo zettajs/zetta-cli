@@ -9,7 +9,7 @@ var CloudClient = require('./cloud_client');
 
 var FogRuntime = require('./fog_runtime');
 
-var dir = path.join(__dirname, 'app');
+var dir = path.join(__dirname, 'app2');
 
 var app = require(path.join(dir, 'app'));
 
@@ -31,7 +31,7 @@ var fog = new FogRuntime(server, scouts);
 fog.init(function(err) {
   var apps = [app];
   fog.loadApps(apps, function() {
-    var host = 'ws://localhost:3000';        
+    var host = 'ws://elroy-cloud.herokuapp.com';        
     CloudClient(server, host, function(server){
       server.listen(3002);
     });

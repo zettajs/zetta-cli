@@ -27,6 +27,7 @@ util.inherits(FakeSocket, Duplex);
 
 FakeSocket.prototype.setTimeout = function() { };
 FakeSocket.prototype.destroy = function() { };
+FakeSocket.prototype.destroySoon = function() { };
 
 FakeSocket.prototype._write = function(chunk, encoding, cb) {
   this.source.write(chunk);

@@ -6,7 +6,7 @@ var argo = require('argo');
 
 module.exports = function(argo, wss, cb) {
 
-  var endpoint = 'ws://localhost:3000' || wss;
+  var endpoint =  wss;
 
   var ws = new WebSocket(endpoint);
 
