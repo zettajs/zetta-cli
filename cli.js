@@ -61,19 +61,20 @@ if(program.run) {
   fog.init(function(err) {
     var apps = [app];
     fog.loadApps(apps);
-
-    server.listen(3002,function(){
-      console.log('elroy now running on http://localhost:3002');
- 
-      if(program.cloud) {
-        var port = 80 || program.port;
-        port = ''+port;
-        var host = 'http://elroy.io' || program.host;
+    if(program.cloud) {
+      var port = 80 || program.port;
+      port = ''+port;
+      var host = 'http://elroy.io' || program.host;
         
-        var endpoint = host+':'+port; 
-        var client = new CloudClient(server, client);
-      } 
-    });
+      var endpoint = host+':'+port; 
+      CloudClient(server, client, function(server) {
+        server.listen(3002, function(){});
+      });
+    } else {
+      server.listen(3002,function(){
+      });
+    }
+    
   });
 
 }
