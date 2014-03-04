@@ -3,12 +3,13 @@ var path = require('path');
 var argo = require('argo');
 var titan = require('titan');
 var siren = require('argo-formatter-siren');
+var CloudClient = require('./cloud_client');
 
 
 
 var FogRuntime = require('./fog_runtime');
 
-var dir = path.join(__dirname, 'app');
+var dir = path.join(__dirname, 'app2');
 
 var app = require(path.join(dir, 'app'));
 
@@ -30,6 +31,9 @@ var fog = new FogRuntime(server, scouts);
 fog.init(function(err) {
   var apps = [app];
   fog.loadApps(apps, function() {
-    server.listen(3002);
+    var host = 'ws://elroy-cloud.herokuapp.com';        
+    CloudClient(server, host, function(server){
+      server.listen(3002);
+    });
   });
 });

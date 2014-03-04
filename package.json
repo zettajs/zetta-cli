@@ -7,7 +7,8 @@
     "argo": "~0.4.9",
     "titan": "~0.1.1",
     "argo-formatter-siren": "0.0.0",
-    "commander": "~2.1.0"
+    "commander": "~2.1.0",
+    "ws": "~0.4.31"
   },
   "devDependencies": {},
   "scripts": {
@@ -23,6 +24,6 @@
     "url": "https://github.com/argo/elroy/issues"
   },
   "bin": {
-    "elroy":"cli.js"
+    "elroy": "cli.js"
   }
 }

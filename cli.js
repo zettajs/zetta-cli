@@ -8,6 +8,7 @@ var program = require('commander'),
     titan = require('titan'),
     siren = require('argo-formatter-siren'),
     FogRuntime = require('./fog_runtime'),
+    CloudClient = require('./cloud_client'),
     fs = require('fs');
 
 program
@@ -16,6 +17,9 @@ program
   .option('new')
   .option('run')
   .option('open')
+  .option('cloud')
+  .option('--host -h [host]')
+  .option('--port -p [port]', parseInt)
   .parse(process.argv);
 
 if(program.new) {
@@ -57,13 +61,24 @@ if(program.run) {
   fog.init(function(err) {
     var apps = [app];
     fog.loadApps(apps);
-
-    server.listen(3002,function(){
-      console.log('elroy now running on http://localhost:3002');
-    });
+    if(program.cloud) {
+      var port = 80 || program.port;
+      port = ''+port;
+      var host = 'http://elroy.io' || program.host;
+        
+      var endpoint = host+':'+port; 
+      CloudClient(server, client, function(server) {
+        server.listen(3002, function(){});
+      });
+    } else {
+      server.listen(3002,function(){
+      });
+    }
+    
   });
 
 }
+
 
 if(program.open) {
   var app = path.basename(process.cwd());
