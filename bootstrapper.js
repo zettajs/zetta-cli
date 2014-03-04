@@ -4,9 +4,6 @@ var argo = require('argo');
 var titan = require('titan');
 var siren = require('argo-formatter-siren');
 var CloudClient = require('./cloud_client');
-
-
-
 var FogRuntime = require('./fog_runtime');
 
 var sampleDir = path.join(__dirname, 'sample');

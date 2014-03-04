@@ -35,7 +35,7 @@ FogRuntime.prototype.init = function(cb) {
 
   this.registry.load(function(err){
     if(err){
-      console.log('Failed to load registry. Creating new one.');
+      console.error('Failed to load registry. Creating new one.');
     }
     self.loadScouts(cb);
   });
@@ -90,14 +90,17 @@ FogRuntime.prototype.loadApp = function(resource) {
   this.argo.add(resource);
 };
 
-FogRuntime.prototype.loadApps = function(apps) {
+FogRuntime.prototype.loadApps = function(apps, cb) {
   var self = this;
   var length = apps.length;
+
   apps.forEach(function(constructor) {
     var app = new constructor();
     var loader = new FogAppLoader(self);
     loader.load(app);
   });
+
+  cb();
 };
 
 FogRuntime.prototype.get = function(id, cb) {
