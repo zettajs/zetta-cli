@@ -11,6 +11,14 @@ module.exports = function(argo, wss, cb) {
   var app = argo
     .use(function(handle) {
       handle('request', function(env, next) {
+        var id = env.request.headers['elroy-message-id'];
+        env.response.setHeader('elroy-message-id', id);
+
+        next(env);
+      });
+    })
+    .use(function(handle) {
+      handle('request', function(env, next) {
         if (env.request.socket.source) {
           env.response.on('finish', function() {
               ws.send(env.request.socket.source.buffer.join('').toString());
