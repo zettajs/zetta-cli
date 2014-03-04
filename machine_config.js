@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
+var pubsub = require('./pubsub_service.js');
 
 var MachineConfig = module.exports = function(machine) {
   this.machine = machine;
@@ -14,7 +15,6 @@ var MachineConfig = module.exports = function(machine) {
   }.bind(this.machine);
 
   this.machine.properties = {};
-  var self = this;
   var reserved = ['properties', 'allowed', 'transitions', '_devices'];
 
   this.machine.update = function() {
@@ -36,6 +36,18 @@ var MachineConfig = module.exports = function(machine) {
   this.machine.emit = this.emitter.emit.bind(this.emitter);
   this.machine.devices = this.devices.bind(this);
   this.machine._devices = this._devices;
+};
+
+MachineConfig.prototype.stream = function(queueName, handler) {
+  var emitter = new EventEmitter();
+
+  queueName = this.machine.type + '/' + queueName;
+  
+  emitter.on('data', function(d) {
+    pubsub.publish(queueName, d);
+  });
+
+  handler(emitter);
 };
 
 MachineConfig.prototype.map = function(type, handler, fields) {

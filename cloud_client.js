@@ -2,9 +2,11 @@ var http = require('http');
 var argo = require('argo');
 var WebSocket = require('ws');
 var FakeSocket = require('./fake_socket');
+var pubsub = require('./pubsub_service');
 
 module.exports = function(argo, wss, cb) {
   var ws = new WebSocket(wss);
+  pubsub.setSocket(ws);
 
   var app = argo
     .use(function(handle) {
