@@ -17,6 +17,11 @@ FogAppLoader.prototype.load = function(app) {
   self.server.loadApp(AppResource.create(this));
 };
 
+// bind to events in fog_runtime
+FogAppLoader.prototype.on = function() {
+  this.server.on.apply(this.server,arguments);
+};
+
 FogAppLoader.prototype.get = function(id, cb) {
   var self = this;
   var device = this.server.get(id, function(err, device){

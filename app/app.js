@@ -6,9 +6,8 @@ var HelloApp = module.exports = function() {
 };
 
 HelloApp.prototype.init = function(elroy) {
-  elroy.get('photosensor', function(err, photosensor) {
-    elroy.get('led', function(err, led) {
-
+  elroy.get('joes-office-photosensor', function(err, photosensor) {
+    elroy.get('joes-office-led', function(err, led) {
       var nightlight = Scientist.configure(Nightlight, photosensor, led);
 
       elroy.expose(nightlight);
