@@ -9,9 +9,12 @@ module.exports = function(argo, wss, cb) {
   var app = argo
     .use(function(handle) {
       handle('request', function(env, next) {
-        env.response.on('finish', function() {
-          ws.send(env.request.socket.source.buffer.join('').toString());
-        });
+        if (env.request.socket.source) {
+          env.response.on('finish', function() {
+              ws.send(env.request.socket.source.buffer.join('').toString());
+          });
+        }
+
         next(env);
       });
     })

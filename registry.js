@@ -12,18 +12,34 @@ function Registry(){
 Registry.prototype.load = function(cb) {
   var self = this;
 
-  fs.readFile(this.path,function(err,buf){    
-    if(err)
-      return cb(err);
-
-    try{
+  var loadRegistry = function(buf) {
+    try {
       var data = JSON.parse(buf.toString());
 
       if(data.devices)
         self.json_devices = data.devices;
       cb();
-    }catch(err){
+    } catch(err){
       cb(err);
+    }
+  };
+
+  fs.readFile(this.path, function(err, buf) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        cb();
+        /*fs.open(self.path, 'wx', function(err) {
+          if (err) {
+            cb(err);
+          } else {
+            cb();
+          }
+        });*/
+      } else {
+        return cb(err);
+      }
+    } else {
+      loadRegistry(buf);
     }
   });
 };
