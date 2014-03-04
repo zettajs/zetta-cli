@@ -19,10 +19,11 @@ ArduinoYun.prototype.turnOn = function(cb) {
   var self = this;
   this.protocol.on(function(err, res) {
     if(err) {
+      console.log('err:', err);
       cb(err);
     } else {
       self.state = 'on';
-      cb(null, res);
+      cb();
     }
   });
 };
@@ -31,10 +32,11 @@ ArduinoYun.prototype.turnOff = function(cb) {
   var self = this;
   this.protocol.off(function(err, res) {
     if(err) {
+      console.log('err:', err);
       cb(err);
     } else {
       self.state = 'off';
-      cb(null, res);
+      cb();
     }
   });
 };

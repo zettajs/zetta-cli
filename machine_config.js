@@ -13,14 +13,21 @@ var MachineConfig = module.exports = function(machine) {
     self.emitter.on(type, handler);
   }.bind(this.machine);
 
-  var properties = {};
-  Object.keys(machine).forEach(function(key) {
-    if (typeof machine[key] !== 'function') {
-      properties[key] = machine[key];
-    }
-  });
+  this.machine.properties = {};
+  var self = this;
+  var reserved = ['properties', 'allowed', 'transitions', '_devices'];
 
-  this.machine.properties = properties;
+  this.machine.update = function() {
+    var properties = {};
+    var self = this;
+    Object.keys(self).forEach(function(key) {
+      if (reserved.indexOf(key) === -1 && typeof self[key] !== 'function') {
+        properties[key] = self[key];
+      }
+    });
+
+    this.properties = properties;
+  }.bind(this.machine);
 
   // TODO: Namespace this as something weird so there's no accidental override.
   this.machine.transitions = this.transitions;

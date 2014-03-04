@@ -4,6 +4,8 @@ var HelloApp = module.exports = function() {
 
 HelloApp.prototype.init = function(elroy, cb) {
   elroy.get('yun', function(err, yun) {
+    yun.call('turn-on');
+
     yun.on('turn-on', function() {
       console.log('Turning PIN13 on.');
     });

@@ -1,4 +1,4 @@
-var Scientist = require('../scientist');
+var Scientist = require('../../scientist');
 var Nightlight = require('./nightlight');
 
 var HelloApp = module.exports = function() {

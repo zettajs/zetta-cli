@@ -32,6 +32,7 @@ exports.create = function(loader) {
   };
 
   function buildEntity(env, machine, actions, selfPath) {
+    machine.update();
     selfPath = selfPath || env.helpers.url.current();
 
     var entity = {
@@ -161,12 +162,21 @@ exports.create = function(loader) {
         });
       }
 
+      var cb = function(err) {
+        if (err) {
+          env.response.statusCode = 500;
+        } else {
+          var entity = buildEntity(env, machine, actions);
+          env.response.body = entity;
+        }
+
+        next(env);
+      };
+
+      args.push(cb);
+
       machine.call.apply(machine, args);
 
-      var entity = buildEntity(env, machine, actions);
-
-      env.response.body = entity;
-      next(env);
     });
   };
 
