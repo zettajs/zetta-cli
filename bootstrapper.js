@@ -9,7 +9,9 @@ var CloudClient = require('./cloud_client');
 
 var FogRuntime = require('./fog_runtime');
 
-var dir = path.join(__dirname, 'app2');
+var sampleDir = path.join(__dirname, 'sample');
+
+var dir = path.join(sampleDir, 'basic-mdns');
 
 var app = require(path.join(dir, 'app'));
 
