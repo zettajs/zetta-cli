@@ -1,7 +1,8 @@
 var YunProtocol = require('../lib/yun_led_protocol');
 
 var ArduinoYun = module.exports = function() {
-  this.name = 'yun';
+  this.type = 'yun';
+  this.name = 'blinker';
   this.state = 'on';
   this.ipAddr = '192.168.1.25';
   this.protocol = new YunProtocol(this.ipAddr);
