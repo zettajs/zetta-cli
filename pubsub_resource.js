@@ -24,6 +24,7 @@ Subscription.prototype.subscribe = function(env, next) {
     } else {
       body = qs.parse(body.toString());
       pubsub.subscribe(body.name); 
+      next(env);
     }
   });
 };
