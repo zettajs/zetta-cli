@@ -6,7 +6,14 @@ var pubsub = require('./pubsub_service');
 
 module.exports = function(argo, wss, cb) {
   var ws = new WebSocket(wss);
-  pubsub.setSocket(ws);
+  ws.on('open', function() {
+    pubsub.setSocket(ws);
+  });
+  
+  ws.on('error', function(e) {
+    console.log('error');
+    console.log(e);
+  });
 
   var app = argo
     .use(function(handle) {
