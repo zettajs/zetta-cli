@@ -29,6 +29,8 @@ var MachineConfig = module.exports = function(machine) {
     this.properties = properties;
   }.bind(this.machine);
 
+  this.machine.update();
+
   // TODO: Namespace this as something weird so there's no accidental override.
   this.machine.transitions = this.transitions;
   this.machine.allowed = this.allowed;
