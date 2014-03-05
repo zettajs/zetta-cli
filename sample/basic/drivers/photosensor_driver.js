@@ -1,6 +1,6 @@
 var PhotosensorDriver = module.exports = function() {
   this.type = 'photosensor';
-  this.name = "joes-office-photosensor";
+  this.name = 'joes-office-photosensor';
   this.data = {};
   this.state = 'on';
   this.value = 0;
@@ -8,11 +8,15 @@ var PhotosensorDriver = module.exports = function() {
 
 PhotosensorDriver.prototype.init = function(config) {
   config
-    .when('on', { allow: ['change'] })
-    .map('change', this.change, [{ name: 'value', type: 'number' }]);
+    .stream('value', this.onValue);
 };
 
-PhotosensorDriver.prototype.change = function(value, cb) {
-  this.value = value;
-  cb(null, value);
+PhotosensorDriver.prototype.onValue = function(emitter) {
+  setInterval(function() {
+    emitter.emit('data', Math.floor(Math.random() * 100));
+  }, 2000);
+
+  /*this.board.on('digitalChange', function(e) {
+    emitter.emit('data', e.value);
+  });*/
 };
