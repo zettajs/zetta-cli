@@ -47,7 +47,7 @@ MachineConfig.prototype.stream = function(queueName, handler) {
     pubsub.publish(queueName, d);
   });
 
-  handler(emitter);
+  handler.call(this.machine, emitter);
 };
 
 MachineConfig.prototype.map = function(type, handler, fields) {
