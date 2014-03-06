@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var argo = require('argo');
+var spdy = require('spdy');
 var titan = require('titan');
 var siren = require('argo-formatter-siren');
 var CloudClient = require('./cloud_client');
@@ -20,6 +21,11 @@ module.exports = function run(dir){
   });
 
   var server = argo()
+    .use(function(handle) {
+      handle('request', function(env, next) {
+        next(env);
+      });
+    })
     .use(titan)
     .allow('*')
     .add(PubSubResource)
