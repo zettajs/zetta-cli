@@ -1,37 +1,35 @@
 var BufferSource = module.exports = function() {
-  this.state = 'initialized'; // 'ready', 'inprogress', 'paused'
+  this.state = 'initialized'; // 'ready', 'stopped'
   this.buffer = [];
-  this.onread = null;
+  this.ondata = null;
+  this.onend = null;
+  this.name = null;
 };
 
 BufferSource.prototype.readStart = function(size) {
-  console.log('readstart');
-  //this.state = 'ready';
-  this.state = 'inprogress'
-
+  //console.log(this.name, 'readStart');
+  this.state = 'ready';
   var self = this;
-  if (self.buffer.length > 0) {
-    self._read();
+
+  if (self.buffer.length === 0) {
+    self.state = 'inprogress'
+    //self.state = 'stopped'
+    //self.onend();
+  } else {
+    self.onread(self.buffer.shift());
   }
 };
 
 BufferSource.prototype.readStop = function() {
+  //console.log(this.name, 'readStop');
   this.state = 'paused';
 };
 
-BufferSource.prototype._read = function() {
-  while(this.buffer.length) {
-    console.log('onread called');
-    this.onread(this.buffer.shift());
-  }
-};
-
 BufferSource.prototype.write = function(chunk) {
+  //console.log(this.name, 'write');
   this.buffer.push(chunk);
 
-  console.log('buffer:', this.buffer);
-
   if (this.state === 'inprogress') {
-    this._read();
+    this.onread(this.buffer.shift());
   }
 };

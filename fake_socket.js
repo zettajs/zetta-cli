@@ -6,10 +6,12 @@ var FakeSocket = module.exports = function(initial) {
   Duplex.call(this);
 
   this.source = new BufferSource();
+  this.source.name = 'source';
+  this.dest = new BufferSource();
+  this.dest.name = 'dest';
 
   var self = this;
   this.source.onread = function(chunk) {
-    console.log('fake socket pushing chunk');
     if (!self.push(chunk)) {
       console.log('stopping read');
       self.source.readStop();
@@ -20,10 +22,19 @@ var FakeSocket = module.exports = function(initial) {
     self.push(null);
   };
 
+  var self = this;
+  this.onread = function() {
+    //console.log('fake socket readable');
+    var data;
+    while (data = self.read()) {
+      //console.log('data:', data);
+      this.ondata(data, 0, data.length);
+    }
+  };
+
   this.onwrite = null;
 
   this.on('end', function() {
-    console.log('ending'.toUpperCase());
     this.ending();
   });
 };
@@ -34,8 +45,9 @@ util.inherits(FakeSocket, Duplex);
 });
 
 FakeSocket.prototype._write = function(chunk, encoding, cb) {
-  console.log('FAKESOCKET _WRITE!!!!!');
+  //console.log('fake socket _write:', chunk);
   this.onwrite(chunk);
+  this.dest.write(chunk);
   cb();
 };
 
