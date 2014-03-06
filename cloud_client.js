@@ -55,11 +55,11 @@ module.exports = function(argo, wss, cb) {
     ws.send(data, { binary: true });
   };
 
-  server.emit('connection', fake);
-  
   ws.on('message', function(data) {
     fake.source.write(data);
   });
+  
+  server.emit('connection', fake);
   
   cb(server);
 };
