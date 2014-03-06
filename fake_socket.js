@@ -21,16 +21,6 @@ var FakeSocket = module.exports = function(initial) {
     self.push(null);
   };
 
-  var self = this;
-  this.onread = function() {
-    //console.log('fake socket readable');
-    var data;
-    while (data = self.read()) {
-      //console.log('data:', data);
-      this.ondata(data, 0, data.length);
-    }
-  };
-
   this.onwrite = null;
 
   this.on('end', function() {
@@ -44,13 +34,11 @@ util.inherits(FakeSocket, Duplex);
 });
 
 FakeSocket.prototype._write = function(chunk, encoding, cb) {
-  //console.log('fake socket _write:', chunk);
   this.onwrite(chunk);
   this.dest.write(chunk);
   cb();
 };
 
 FakeSocket.prototype._read = function(size) {
-  //console.log('fake socket _read:', size);
   return this.source.readStart(size);
 };
