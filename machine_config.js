@@ -77,10 +77,16 @@ MachineConfig.prototype.when = function(state, options) {
 MachineConfig.prototype.call = function(/* type, ...args */) {
   var args = Array.prototype.slice.call(arguments);
   var type = args[0];
-  var rest = args.slice(1);
+  var next = args[args.length-1];
+
+  if(typeof next !== 'function')
+    next = function(err){};
+
+  var rest = args.slice(1,args.length-1);
 
   var self = this;
-  var cb = function(err, val) {
+  var cb = function callback(err, val) {
+
     var properties = {};
     Object.keys(self.machine).forEach(function(key) {
       if (typeof self.machine[key] !== 'function' && ['transitions', 'allowed', 'properties'].indexOf(key) === -1) {
@@ -97,11 +103,12 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
       cbArgs[0] = type;
       self.emitter.emit.apply(self.emitter, cbArgs);
     }
+
+    next.apply(arguments);
   };
 
   var handlerArgs = rest.concat([cb]);
-
-
+  
   if (this.transitions[type]) {
     this.transitions[type].handler.apply(this.machine, handlerArgs);
   }
