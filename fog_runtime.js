@@ -51,10 +51,11 @@ FogRuntime.prototype.loadScouts = function(cb) {
     scout.on('discover', function() {
       var machine = Scientist.configure.apply(null,arguments);
       var found = self.deviceInRegistry(machine,scout.compare);
-      if(!found)
-        self.registry.add(machine,function(){});
-
-      self.emit('deviceready', machine);
+      if(!found){
+        self.registry.add(machine,function(){
+          self.emit('deviceready', machine);
+        });
+      }
     });
 
     scout.init(function(err){

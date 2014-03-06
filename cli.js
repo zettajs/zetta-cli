@@ -25,7 +25,7 @@ program
 
 if(program.new) {
   var p = path.join(process.cwd(), program.args[0]);
-  var s = path.join(__dirname, './app');
+  var s = path.join(__dirname, './sample/basic');
   fs.mkdir(p, function(err) {
     if(err) {
       console.log('Error creating folder!');

@@ -34,6 +34,10 @@ FogAppLoader.prototype.get = function(id, cb) {
   });
 };
 
+FogAppLoader.prototype.configure = function(/* args */) {
+  return Scientist.configure.apply(null,arguments);
+};
+
 FogAppLoader.prototype.expose = function(machine, path) {
   if (typeof machine === 'function') {
     machine = Scientist.configure(machine);
