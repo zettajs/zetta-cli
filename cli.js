@@ -9,7 +9,8 @@ var program = require('commander'),
     siren = require('argo-formatter-siren'),
     FogRuntime = require('./fog_runtime'),
     CloudClient = require('./cloud_client'),
-    fs = require('fs');
+    fs = require('fs'),
+    bootstrapper = require('./bootstrapper');
 
 program
   .version(pkg.version)
@@ -41,42 +42,7 @@ if(program.new) {
 
 if(program.run) {
   var dir = process.cwd();
-  var app = require(path.join(dir, 'app'));
-
-  var scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
-    if (/^.+\.js$/.test(scoutPath)) {
-      return scoutPath;
-    }
-  }).map(function(scoutPath) {
-    return require(path.join(dir, 'scouts', scoutPath));
-  });
-
-  var server = argo()
-    .use(titan)
-    .allow('*')
-    .format({ directory : path.join(__dirname,'api_formats'), engines: [siren], override: {'application/json': siren}})
-    .logger();
-
-  var fog = new FogRuntime(server, scouts);
-  fog.init(function(err) {
-    var apps = [app];
-    fog.loadApps(apps);
-    if(program.cloud) {
-      var port = 80 || program.port;
-      port = ''+port;
-      var host = 'http://elroy.io' || program.host;
-        
-      var endpoint = host+':'+port; 
-      CloudClient(server, client, function(server) {
-        server.listen(3002, function(){});
-      });
-    } else {
-      server.listen(3002,function(){
-      });
-    }
-    
-  });
-
+  bootstrapper(dir);
 }
 
 
