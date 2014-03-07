@@ -1,5 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var pubsub = require('./pubsub_service.js');
+var Logger = require('./logger');
+var l = Logger();
 
 var MachineConfig = module.exports = function(machine) {
   this.machine = machine;
@@ -11,7 +13,10 @@ var MachineConfig = module.exports = function(machine) {
   var self = this;
 
   this.machine.on = function(type, handler) {
-    self.emitter.on(type, handler);
+    self.emitter.on(type, function(){
+      l.emit('log', 'fog-runtime', 'Device transitioning '+machine.type+' transition '+type);
+      handler(arguments);
+    });
   }.bind(this.machine);
 
   this.machine.properties = {};
