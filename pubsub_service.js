@@ -1,3 +1,6 @@
+var Logger = require('./logger');
+var l = Logger();
+
 var subscribedTo = [];
 var socket;
  
@@ -20,6 +23,7 @@ exports.publish = function(name, data) {
 
 exports.subscribe = function(name) {
   if (subscribedTo.indexOf(name) === -1) {
+    l.emit('log', 'fog-runtime', 'Created subscription to stream '+name);
     subscribedTo.push(name);
   }
 };
