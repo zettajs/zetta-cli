@@ -13,10 +13,7 @@ var MachineConfig = module.exports = function(machine) {
   var self = this;
 
   this.machine.on = function(type, handler) {
-    self.emitter.on(type, function(){
-      l.emit('log', 'fog-runtime', 'Device transitioning '+machine.type+' transition '+type);
-      handler(arguments);
-    });
+    self.emitter.on(type, handler);
   }.bind(this.machine);
 
   this.machine.properties = {};
@@ -83,6 +80,10 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
   var args = Array.prototype.slice.call(arguments);
   var type = args[0];
   var next = args[args.length-1];
+
+  if(this.machine.type) {
+    l.emit('log', 'fog-runtime', 'Device ' + this.machine.type + ' transititon ' + type);
+  }
 
   if(typeof next !== 'function')
     next = function(err){};
