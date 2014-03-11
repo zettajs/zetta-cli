@@ -1,5 +1,6 @@
 var AppResource = require('./app_resource');
 var Scientist = require('./scientist');
+var Logger = require('./logger')();
 
 var FogAppLoader = module.exports = function(server) {
   this.server = server;
@@ -47,3 +48,8 @@ FogAppLoader.prototype.expose = function(machine, path) {
 
   this.exposed[this.path + path] = machine;
 };
+
+FogAppLoader.prototype.log = function(msg, data) {
+  Logger.emit('user-log', msg, data);
+};
+

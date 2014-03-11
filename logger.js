@@ -1,9 +1,20 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var colors = require('colors');
+var bunyan = require('bunyan');
+var Stream = require('stream');
+var Strftime = require('strftime');
 
 function Logger() {
   EventEmitter.call(this);
+  var stream = new Stream();
+  stream.writable = true;
+
+  stream.write = function(obj) {
+    var msg =  obj.time.getTime().toString().green + ' ' + obj.msg.blue;
+    console.log(msg);
+  };
+  this.bunyanInstance = bunyan.createLogger({ name: 'elroy', streams:[{type: 'raw', stream:stream}] });
 }
 util.inherits(Logger, EventEmitter);
 
@@ -12,9 +23,15 @@ util.inherits(Logger, EventEmitter);
  *
  */
 Logger.prototype.init = function() {
+  var self = this;
   this.on('log', function(event, message) {
-    var msg = '['+event+'] ' + message.underline.blue;
-    console.log(msg);
+    var msg = '['+event+'] ' + message;
+    self.bunyanInstance.info(msg);
+    //console.log(msg);
+  });
+  
+  this.on('user-log', function(msg, data) {
+    self.bunyanInstance.info(data, '[user-log] '+msg);
   });
 };
 
