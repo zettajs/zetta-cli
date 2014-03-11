@@ -81,9 +81,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
   var type = args[0];
   var next = args[args.length-1];
 
-  if(this.machine.type) {
-    l.emit('log', 'fog-runtime', 'Device ' + this.machine.type + ' transititon ' + type);
-  }
+
 
   if(typeof next !== 'function')
     next = function(err){};
@@ -110,6 +108,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
       self.emitter.emit.apply(self.emitter, cbArgs);
       var d = { name: self.name, transition: type, properties: self.machine.properties };
       pubsub.publish(self.machine.type + '/_transitions', d);
+      l.emit('log', 'fog-runtime', 'Device ' + self.machine.type + ' transititon ' + type);
     }
 
     next.apply(arguments);
