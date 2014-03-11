@@ -17,7 +17,7 @@ Nightlight.prototype.init = function(config) {
     var led = this.leds[0];
     var photosensor = this.photosensors[0];
 
-   photosensor.on('change', function(value) {
+    photosensor.on('change', function(value) {
       if (value < 100) {
         led.call('turn-on');
       } else {

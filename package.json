@@ -10,8 +10,9 @@
     "commander": "~2.1.0",
     "ws": "~0.4.31",
     "colors": "~0.6.2",
-    "bunyan": "~0.22.1"
- },
+    "bunyan": "~0.22.1",
+    "strftime": "~0.8.0"
+  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

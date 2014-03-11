@@ -3,6 +3,8 @@ var util = require('util');
 var colors = require('colors');
 var bunyan = require('bunyan');
 var Stream = require('stream');
+var pubsub = require('./pubsub_service');
+var Strftime = require('strftime');
 
 function Logger() {
   EventEmitter.call(this);
@@ -10,10 +12,17 @@ function Logger() {
   stream.writable = true;
 
   stream.write = function(obj) {
-    var msg =  obj.time.getTime().toString().green + ' ' + obj.msg.blue;
+    var msg =  Strftime('%b-%d-%Y %H:%M:%S', obj.time).green + ' ' + obj.msg.blue;
     console.log(msg);
   };
-  this.bunyanInstance = bunyan.createLogger({ name: 'elroy', streams:[{type: 'raw', stream:stream}] });
+
+  var pumperStream = new Stream();
+  pumperStream.writable = true;
+  pumperStream.write = function(obj) {
+    pubsub.publish('_logs', obj);
+  };
+
+  this.bunyanInstance = bunyan.createLogger({ name: 'elroy', streams:[{type: 'raw', stream:stream}, {type: 'raw', stream:pumperStream}] });
 }
 util.inherits(Logger, EventEmitter);
 
@@ -23,10 +32,13 @@ util.inherits(Logger, EventEmitter);
  */
 Logger.prototype.init = function() {
   var self = this;
-  this.on('log', function(event, message) {
+  this.on('log', function(event, message, d) {
     var msg = '['+event+'] ' + message;
-    self.bunyanInstance.info(msg);
-    //console.log(msg);
+    if(d) {
+      self.bunyanInstance.info(d, msg);
+    } else {
+      self.bunyanInstance.info(msg);
+    }
   });
   
   this.on('user-log', function(msg, data) {

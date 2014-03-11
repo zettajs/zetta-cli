@@ -106,7 +106,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
       self.emitter.emit.apply(self.emitter, cbArgs);
       var d = { name: self.name, transition: type, properties: self.machine.properties };
       pubsub.publish(self.machine.type + '/_transitions', d);
-      l.emit('log', 'fog-runtime', 'Device ' + self.machine.type + ' transititon ' + type);
+      l.emit('log', 'fog-runtime', 'Device ' + self.machine.type + ' transititon ' + type, d);
     }
 
     next.apply(arguments);
