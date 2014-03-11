@@ -3,7 +3,6 @@ var util = require('util');
 var colors = require('colors');
 var bunyan = require('bunyan');
 var Stream = require('stream');
-var Strftime = require('strftime');
 
 function Logger() {
   EventEmitter.call(this);

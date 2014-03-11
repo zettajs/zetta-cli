@@ -81,8 +81,6 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
   var type = args[0];
   var next = args[args.length-1];
 
-
-
   if(typeof next !== 'function')
     next = function(err){};
 
