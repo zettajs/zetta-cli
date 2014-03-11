@@ -102,6 +102,8 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
     } else {
       cbArgs.unshift(type);
       self.emitter.emit.apply(self.emitter, cbArgs);
+      var d = { name: self.name, transition: type };
+      pubsub.publish(self.machine.type + '/_transitions', d);
     }
 
     next.apply(arguments);

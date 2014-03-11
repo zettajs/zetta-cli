@@ -30,8 +30,8 @@ module.exports = function run(dir){
   fog.init(function(err) {
     var apps = [app];
     fog.loadApps(apps, function() {
-      var host = 'ws://elroy-cloud.herokuapp.com';        
-      //var host = 'ws://localhost:3000';
+      //var host = 'ws://elroy-cloud.herokuapp.com';        
+      var host = 'ws://localhost:3000';
       CloudClient(server, host, function(server){
         server.listen(3002);
       });
