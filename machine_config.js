@@ -82,10 +82,10 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
   if(typeof next !== 'function')
     next = function(err){};
 
-  var rest = args.slice(1,args.length-1);
+  var rest = args.slice(1, args.length-1);
 
   var self = this;
-  var cb = function callback(err, val) {
+  var cb = function callback() {
 
     var properties = {};
     Object.keys(self.machine).forEach(function(key) {
@@ -100,7 +100,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
     if (cbArgs.length && cbArgs[0] instanceof Error) {
       self.emitter.emit('error', cbArgs[0]);
     } else {
-      cbArgs[0] = type;
+      cbArgs.unshift(type);
       self.emitter.emit.apply(self.emitter, cbArgs);
     }
 
