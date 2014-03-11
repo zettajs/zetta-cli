@@ -1,77 +1,79 @@
 var querystring = require('querystring');
 var url = require('url');
 
-exports.create = function(loader) {
-  function buildActions(machine) {
-    var actions = null;
+var buildActions = exports.buildActions = function(machine) {
+  var actions = null;
 
-    Object.keys(machine.transitions).forEach(function(type) {
-      var transition = machine.transitions[type];
-      var fields = transition.fields ? [].concat(transition.fields) : [];
-      fields.push({ name: 'action', type: 'hidden', value: type });
+  Object.keys(machine.transitions).forEach(function(type) {
+    var transition = machine.transitions[type];
+    var fields = transition.fields ? [].concat(transition.fields) : [];
+    fields.push({ name: 'action', type: 'hidden', value: type });
 
-      var action = {
-        name: type,
-        method: 'POST',
-        href: null,
-        fields: fields
-      };
+    var action = {
+      name: type,
+      method: 'POST',
+      href: null,
+      fields: fields
+    };
 
-      if (!actions) {
-        actions = [];
+    if (!actions) {
+      actions = [];
+    }
+
+    actions.push(action);
+  });
+
+  return actions;
+};
+
+var buildEntity = exports.buildEntity = function buildEntity(loader, env, machine, actions, selfPath) {
+  machine.update();
+  selfPath = selfPath || env.helpers.url.current();
+
+  var entity = {
+    class: [machine.type],
+    properties: machine.properties,
+    entities: undefined,
+    actions: actions,
+    links: [{ rel: ['self'], href: selfPath },
+            { rel: ['index'], href: env.helpers.url.path(loader.path) }]
+  };
+
+  if (machine._devices.length) {
+    entity.entities = machine._devices.filter(function(device) {
+      var path = env.helpers.url.join(device.name);
+
+      if (loader.exposed[url.parse(path).path]) {
+        return device;
       }
+    }).map(function(device) {
+      var path = env.helpers.url.join(device.name);
+      return buildEntity(env, device, null, path)
+    });
+  }
 
-      actions.push(action);
+  if (entity.actions) {
+    entity.actions.forEach(function(action) {
+      action.href = env.helpers.url.current();
     });
 
-    return actions;
+    entity.actions = entity.actions.filter(function(action) {
+      var allowed = machine.allowed[machine.state];
+      if (allowed && allowed.indexOf(action.name) > -1) {
+        return action;
+      }
+    });
   }
+
+  return entity;
+};
+
+exports.create = function(loader) {
 
   var AppResource = function() {
     this.path = loader.path;
   };
 
-  function buildEntity(env, machine, actions, selfPath) {
-    machine.update();
-    selfPath = selfPath || env.helpers.url.current();
-
-    var entity = {
-      class: [machine.type],
-      properties: machine.properties,
-      entities: undefined,
-      actions: actions,
-      links: [{ rel: ['self'], href: selfPath },
-              { rel: ['index'], href: env.helpers.url.path(loader.path) }]
-    };
-
-    if (machine._devices.length) {
-      entity.entities = machine._devices.filter(function(device) {
-        var path = env.helpers.url.join(device.name);
-
-        if (loader.exposed[url.parse(path).path]) {
-          return device;
-        }
-      }).map(function(device) {
-        var path = env.helpers.url.join(device.name);
-        return buildEntity(env, device, null, path)
-      });
-    }
-
-    if (entity.actions) {
-      entity.actions.forEach(function(action) {
-        action.href = env.helpers.url.current();
-      });
-
-      entity.actions = entity.actions.filter(function(action) {
-        var allowed = machine.allowed[machine.state];
-        if (allowed && allowed.indexOf(action.name) > -1) {
-          return action;
-        }
-      });
-    }
-
-    return entity;
-  }
 
   AppResource.prototype.init = function(config) {
     config.path(this.path)
@@ -119,7 +121,7 @@ exports.create = function(loader) {
 
     var actions = buildActions(machine);
 
-    env.response.body = buildEntity(env, machine, actions);
+    env.response.body = buildEntity(loader, env, machine, actions);
     next(env);
   };
 
@@ -166,7 +168,7 @@ exports.create = function(loader) {
         if (err) {
           env.response.statusCode = 500;
         } else {
-          var entity = buildEntity(env, machine, actions);
+          var entity = buildEntity(loader, env, machine, actions);
           env.response.body = entity;
         }
 
