@@ -1,5 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var pubsub = require('./pubsub_service.js');
+var Logger = require('./logger');
+var l = Logger();
 
 var MachineConfig = module.exports = function(machine) {
   this.machine = machine;
@@ -104,6 +106,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
       self.emitter.emit.apply(self.emitter, cbArgs);
       var d = { name: self.name, transition: type, properties: self.machine.properties };
       pubsub.publish(self.machine.type + '/_transitions', d);
+      l.emit('log', 'fog-runtime', 'Device ' + self.machine.type + ' transititon ' + type, d);
     }
 
     next.apply(arguments);

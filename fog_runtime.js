@@ -4,6 +4,8 @@ var DevicesResource = require('./api_resources/devices');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var Registry = require('./registry');
+var Logger = require('./logger');
+var l = Logger();
 
 var FogRuntime = module.exports = function(argo, scouts) {
   this.argo = argo;
@@ -21,7 +23,7 @@ FogRuntime.prototype.deviceInRegistry = function(device,compare){
     if(!compare)
       return device.name === b.name;
 
-    return compare(device,b)
+    return compare(device,b);
   });
   return found.length !== 0;
 };
@@ -31,11 +33,12 @@ FogRuntime.prototype.init = function(cb) {
   var self = this;
 
   self.argo
-    .add(DevicesResource, self.registry.devices)
+    .add(DevicesResource, self.registry.devices);
 
   this.registry.load(function(err){
     if(err){
-      console.error('Failed to load registry. Creating new one.');
+      l.emit('log', 'fog-device-registry', 'Failed to load registry. Creating a new one.');
+      //console.error('Failed to load registry. Creating new one.');
     }
     self.loadScouts(cb);
   });
@@ -51,9 +54,12 @@ FogRuntime.prototype.loadScouts = function(cb) {
     scout.on('discover', function() {
       var machine = Scientist.configure.apply(null,arguments);
       var found = self.deviceInRegistry(machine,scout.compare);
+      l.emit('log', 'fog-runtime', 'Discovered new device '+machine.type);
       if(!found){
         self.registry.add(machine,function(){
+          l.emit('log', 'fog-runtime', 'Device ready '+machine.type);
           self.emit('deviceready', machine);
+
         });
       }
     });
@@ -73,6 +79,7 @@ FogRuntime.prototype.loadScouts = function(cb) {
 
           var machine = Scientist.configure.apply(null,ret);
           self.registry.devices.push(machine);
+          l.emit('log', 'fog-runtime', 'Device ready '+machine.type+' initialized from registry');
           self.emit('deviceready', machine);
         });
       });
@@ -115,6 +122,7 @@ FogRuntime.prototype.get = function(id, cb) {
   } else {  
     this.on('deviceready', function(device){
       if(device.name === id) {
+        l.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
         setImmediate(function() { cb(null, device); });
       }
     });
