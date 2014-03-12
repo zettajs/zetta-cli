@@ -36,7 +36,7 @@ module.exports = function run(dir){
   fog.init(function(err) {
     var apps = [app];
     fog.loadApps(apps, function() {
-      var host = 'ws://elroy-cloud.herokuapp.com';        
+      var host = process.env.ELROY_CLOUD || 'ws://elroy-cloud.herokuapp.com';        
       //var host = 'ws://localhost:3000';
       l.emit('log', 'fog-bootstrapper', 'connecting to cloud endpoint at: '+host+' via websocket');
       CloudClient(server, host, function(server){
