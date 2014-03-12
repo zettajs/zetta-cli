@@ -86,7 +86,10 @@ exports.create = function(loader) {
 
   AppResource.prototype.home = function(env, next) {
     var entity = {
-      class: ['home'],
+      class: ['app'],
+      properties: {
+        name: loader.app.name
+      },
       entities: [],
       links: [ { rel: ['self'], href: env.helpers.url.path(this.path) } ]
     };
