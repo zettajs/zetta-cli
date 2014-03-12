@@ -19,6 +19,7 @@ function Logger() {
   var pumperStream = new Stream();
   pumperStream.writable = true;
   pumperStream.write = function(obj) {
+    obj.unixtime = obj.time.getTime();
     pubsub.publish('_logs', obj);
   };
 

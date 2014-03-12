@@ -11,8 +11,7 @@ module.exports = function(argo, wss, cb) {
   });
   
   ws.on('error', function(e) {
-    console.log('error');
-    console.log(e);
+    console.log('websocket error',e);
   });
 
   var app = argo
