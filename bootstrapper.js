@@ -8,9 +8,11 @@ var FogRuntime = require('./fog_runtime');
 var PubSubResource = require('./pubsub_resource');
 var Logger = require('./logger');
 
-module.exports = function run(dir){
+module.exports = function run(dir, appName){
+  
+  var file = appName || 'app';
 
-  var app = require(path.join(dir, 'app'));
+  var app = require(path.join(dir, file));
 
   var scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
     if (/^.+\.js$/.test(scoutPath)) {

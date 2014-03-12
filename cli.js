@@ -20,6 +20,7 @@ program
   .option('open')
   .option('cloud')
   .option('--host -h [host]')
+  .option('--app -a [app]')
   .option('--port -p [port]', parseInt)
   .parse(process.argv);
 
@@ -41,8 +42,12 @@ if(program.new) {
 }
 
 if(program.run) {
+  var app = null;
+  if(program.A) {
+    app = program.A;
+  }
   var dir = process.cwd();
-  bootstrapper(dir);
+  bootstrapper(dir, app);
 }
 
 
