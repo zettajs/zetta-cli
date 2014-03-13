@@ -17,6 +17,7 @@ HelloApp.prototype.init = function(elroy) {
       });
 
       elroy.expose(led);
+      elroy.expose(photosensor);
     });
   });
 };
