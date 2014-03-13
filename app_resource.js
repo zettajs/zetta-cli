@@ -31,7 +31,7 @@ var buildActions = exports.buildActions = function(env, machine) {
       class: ['event-subscription'],
       name: name.replace('/', '-') + '-subscribe',
       method: 'subscribe',
-      href: env.helpers.url.path('/').replace('http', 'ws') + '/_events',
+      href: env.helpers.url.path('/').replace('http', 'ws') + '_events',
       fields: fields
     };
 
