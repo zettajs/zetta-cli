@@ -1,6 +1,6 @@
 {
   "name": "elroy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "elroy.js",
   "dependencies": {
@@ -11,7 +11,8 @@
     "ws": "~0.4.31",
     "colors": "~0.6.2",
     "bunyan": "~0.22.1",
-    "strftime": "~0.8.0"
+    "strftime": "~0.8.0",
+    "elroy-ws-reconnect": "0.0.1"
   },
   "devDependencies": {},
   "scripts": {

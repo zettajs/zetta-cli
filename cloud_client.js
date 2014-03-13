@@ -1,17 +1,23 @@
 var http = require('http');
 var argo = require('argo');
-var WebSocket = require('ws');
+var Websocket = require('elroy-ws-reconnect');
 var FakeSocket = require('./fake_socket');
 var pubsub = require('./pubsub_service');
 
+var Logger = require('./logger');
+var l = Logger();
+
 module.exports = function(argo, wss, cb) {
-  var ws = new WebSocket(wss);
-  ws.on('open', function() {
-    pubsub.setSocket(ws);
+
+  var ws = new Websocket(wss,{pingInterval : 5000});
+  pubsub.setSocket(ws);
+
+  ws.on('connect', function(socket) {
+    l.emit('log', 'cloud-client', 'Connection made to the cloud. '+wss);
   });
-  
-  ws.on('error', function(e) {
-    console.log('websocket error',e);
+
+  ws.on('disconnect', function(err) {
+    l.emit('log', 'cloud-client', 'Disconnected from the cloud server. '+wss );
   });
 
   var app = argo
