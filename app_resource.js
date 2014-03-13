@@ -79,7 +79,7 @@ var buildEntity = exports.buildEntity = function buildEntity(loader, env, machin
     });
 
     entity.actions = entity.actions.filter(function(action) {
-      if (action.class.indexOf('event-subscription') !== -1) {
+      if (action.class && action.class.indexOf('event-subscription') !== -1) {
         return action;
       }
 
