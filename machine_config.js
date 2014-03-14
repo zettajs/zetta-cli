@@ -55,6 +55,8 @@ MachineConfig.prototype.stream = function(queueName, handler) {
   });
 
   handler.call(this.machine, emitter);
+
+  return this;
 };
 
 MachineConfig.prototype.map = function(type, handler, fields) {
