@@ -46,8 +46,7 @@ if(program.run) {
   if(program.A) {
     app = program.A;
   }
-  var dir = process.cwd();
-  bootstrapper(dir, app);
+  bootstrapper(app);
 }
 
 
