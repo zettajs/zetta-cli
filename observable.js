@@ -6,6 +6,7 @@ var Observable = module.exports = function(query, runtime) {
   this.registry = this.runtime.registry;
   this.logger = new Logger();
   this.state = 'ready'; // disposed
+  this.remainder = null;
 };
 
 Observable.prototype.subscribe = function(cb) {
@@ -29,14 +30,28 @@ Observable.prototype.subscribe = function(cb) {
     }
 
     if(device.type === type) {
+      if (self.remainder !== null) {
+        self.remainder--;
+        if (self.remainder === 0) {
+          self.dispose();
+        }
+      }
       self.logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
       cb(null, device);
     }
   }
 
   this.runtime.on('deviceready', getDevice);
+
+  return this;
+};
+
+Observable.prototype.take = function(limit) {
+  this.remainder = 5;
+  return this;
 };
 
 Observable.prototype.dispose = function() {
   this.state = 'disposed';
+  return this;
 };

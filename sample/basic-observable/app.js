@@ -3,14 +3,10 @@ var HelloApp = module.exports = function() {
 };
 
 HelloApp.prototype.init = function(elroy) {
-  var ledObservable = elroy.observe('type="led"');
-
-  ledObservable.subscribe(function(err, led) {
-    elroy.expose(led);
-  });
-
-  setTimeout(function() {
-    ledObservable.dispose();
-  }, 6 * 1000);
+  elroy.observe('type="led"')
+    .take(5)
+    .subscribe(function(err, led) {
+      elroy.expose(led);
+    });
 };
 
