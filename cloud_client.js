@@ -1,14 +1,14 @@
 var spdy = require('spdy');
 var argo = require('argo');
-var Websocket = require('elroy-ws-reconnect');
-//var WebSocket = require('ws');
+//var WebSocket = require('elroy-ws-reconnect');
+var WebSocket = require('ws');
 var pubsub = require('./pubsub_service');
 
 var Logger = require('./logger');
 var l = Logger();
 
 module.exports = function(argo, wss, cb) {
-  var ws = new Websocket(wss,{pingInterval : 5000});
+  var ws = new WebSocket(wss,{pingInterval : 5000});
   //var ws = new WebSocket(url);
   pubsub.setSocket(ws);
 
@@ -18,6 +18,7 @@ module.exports = function(argo, wss, cb) {
 
   ws.on('disconnect', function(err) {
     l.emit('log', 'cloud-client', 'Disconnected from the cloud server. '+wss );
+  });
 
   ws.on('error', function(e) {
     console.log('error');
@@ -54,6 +55,7 @@ module.exports = function(argo, wss, cb) {
   ws.on('open', function() {
     pubsub.setSocket(ws);
     //server.emit('connection', fake);
+    console.log(ws._socket);
     server.emit('connection', ws._socket);
   });
 
@@ -70,6 +72,7 @@ module.exports = function(argo, wss, cb) {
 
   ws.on('message', function(data) {
     console.log('on message');
+    console.log(data);
     //fake.source.write(data);
   });
   
