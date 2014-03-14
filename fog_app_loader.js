@@ -4,7 +4,6 @@ var Logger = require('./logger')();
 
 var FogAppLoader = module.exports = function(server) {
   this.server = server;
-  this.machines = [];
   this.app = null;
   this.path = null;
   this.exposed = {};
@@ -23,17 +22,11 @@ FogAppLoader.prototype.on = function() {
   this.server.on.apply(this.server,arguments);
 };
 
-FogAppLoader.prototype.get = function(id, cb) {
-  var self = this;
-  var device = this.server.get(id, function(err, device){
-    if(err) {
-      cb(err);
-    } else {
-      self.machines.push(device);
-      cb(null, device);
-    }
-  });
-};
+['get', 'observe'].forEach(function(method) {
+  FogAppLoader.prototype[method] = function() {
+    return this.server[method].apply(this.server, arguments);
+  };
+});
 
 FogAppLoader.prototype.configure = function(/* args */) {
   return Scientist.configure.apply(null,arguments);

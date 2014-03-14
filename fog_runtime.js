@@ -1,10 +1,12 @@
-var FogAppLoader = require('./fog_app_loader');
-var Scientist = require('./scientist');
-var DevicesResource = require('./api_resources/devices');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
-var Registry = require('./registry');
+var DevicesResource = require('./api_resources/devices');
+var FogAppLoader = require('./fog_app_loader');
 var Logger = require('./logger');
+var Observable = require('./observable');
+var Registry = require('./registry');
+var Scientist = require('./scientist');
+
 var l = Logger();
 
 var FogRuntime = module.exports = function(argo, scouts) {
@@ -111,21 +113,30 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
   cb();
 };
 
-FogRuntime.prototype.get = function(id, cb) {
+FogRuntime.prototype.get = function(name, cb) {
+  var self = this;
 
   var device = this.registry.devices.filter(function(device) {
-    return device.name === id;
+    return device.name === name;
   });
 
   if(device.length) {
-    setImmediate(function() { cb(null, device[0]); });
-  } else {  
-    this.on('deviceready', function(device){
-      if(device.name === id) {
-        l.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
-        setImmediate(function() { cb(null, device); });
-      }
+    setImmediate(function() {
+      cb(null, device[0]);
     });
+  } else {
+    var getDevice = function(device){
+      if(device.name === name) {
+        l.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
+        self.removeListener('deviceready', getDevice);
+        cb(null, device);
+      }
+    };
+
+    this.on('deviceready', getDevice);
   }
-  
+};
+
+FogRuntime.prototype.observe = function(query) {
+  return new Observable(query, this);
 };
