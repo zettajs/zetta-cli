@@ -1,7 +1,7 @@
 var querystring = require('querystring');
 var url = require('url');
 
-var buildActions = exports.buildActions = function(machine) {
+var buildActions = exports.buildActions = function(env, machine) {
   var actions = null;
 
   Object.keys(machine.transitions).forEach(function(type) {
@@ -13,6 +13,25 @@ var buildActions = exports.buildActions = function(machine) {
       name: type,
       method: 'POST',
       href: null,
+      fields: fields
+    };
+
+    if (!actions) {
+      actions = [];
+    }
+
+    actions.push(action);
+  });
+
+  machine.streams.forEach(function(name) {
+    var fields = [];
+    fields.push({ name: 'name', type: 'hidden', value: name });
+
+    var action = {
+      class: ['event-subscription'],
+      name: name.replace('/', '-') + '-subscribe',
+      method: 'subscribe',
+      href: env.helpers.url.path('/').replace('http', 'ws') + 'events',
       fields: fields
     };
 
@@ -54,10 +73,16 @@ var buildEntity = exports.buildEntity = function buildEntity(loader, env, machin
 
   if (entity.actions) {
     entity.actions.forEach(function(action) {
-      action.href = env.helpers.url.current();
+      if (!action.href) {
+        action.href = env.helpers.url.current();
+      }
     });
 
     entity.actions = entity.actions.filter(function(action) {
+      if (action.class && action.class.indexOf('event-subscription') !== -1) {
+        return action;
+      }
+
       var allowed = machine.allowed[machine.state];
       if (allowed && allowed.indexOf(action.name) > -1) {
         return action;
@@ -122,7 +147,7 @@ exports.create = function(loader) {
       return next(env);
     }
 
-    var actions = buildActions(machine);
+    var actions = buildActions(env, machine);
 
     env.response.body = buildEntity(loader, env, machine, actions);
     next(env);
@@ -136,7 +161,7 @@ exports.create = function(loader) {
       return next(env);
     }
 
-    var actions = buildActions(machine);
+    var actions = buildActions(env, machine);
 
     env.request.getBody(function(err, body) {
       body = querystring.parse(body.toString());

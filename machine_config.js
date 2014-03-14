@@ -40,12 +40,15 @@ var MachineConfig = module.exports = function(machine) {
   this.machine.emit = this.emitter.emit.bind(this.emitter);
   this.machine.devices = this.devices.bind(this);
   this.machine._devices = this._devices;
+  this.machine.streams = [];
 };
 
 MachineConfig.prototype.stream = function(queueName, handler) {
   var emitter = new EventEmitter();
 
   queueName = this.machine.type + '/' + queueName;
+
+  this.machine.streams.push(queueName);
   
   emitter.on('data', function(d) {
     pubsub.publish(queueName, d);

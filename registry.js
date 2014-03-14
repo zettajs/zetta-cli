@@ -1,9 +1,8 @@
-var fs = require('fs')
-  , path = require('path')
-  , Scientist = require('./scientist');
+var fs = require('fs');
+var path = require('path');
+var Scientist = require('./scientist');
 
-module.exports = Registry;
-function Registry(){
+var Registry = module.exports = function(){
   this.devices = [];
   this.json_devices = [];
   this.path = path.join(process.cwd(),'registry.json');
@@ -28,13 +27,6 @@ Registry.prototype.load = function(cb) {
     if (err) {
       if (err.code === 'ENOENT') {
         cb();
-        /*fs.open(self.path, 'wx', function(err) {
-          if (err) {
-            cb(err);
-          } else {
-            cb();
-          }
-        });*/
       } else {
         return cb(err);
       }
