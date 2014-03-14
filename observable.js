@@ -47,7 +47,7 @@ Observable.prototype.subscribe = function(cb) {
 };
 
 Observable.prototype.take = function(limit) {
-  this.remainder = 5;
+  this.remainder = limit;
   return this;
 };
 

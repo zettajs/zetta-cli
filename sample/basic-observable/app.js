@@ -9,4 +9,3 @@ HelloApp.prototype.init = function(elroy) {
       elroy.expose(led);
     });
 };
-
