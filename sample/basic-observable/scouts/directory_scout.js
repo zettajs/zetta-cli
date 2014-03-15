@@ -22,7 +22,7 @@ DirectoryScout.prototype.init = function(next) {
       var device = require(path.join(self.directory, file));
       var name = 0;
       setInterval(function() {
-        deviceName = 'led' + ++name;
+        deviceName = file.split('_')[0] + ++name;
         self.emit('discover', device, deviceName);
       }, 1000);
     });  

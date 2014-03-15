@@ -116,15 +116,33 @@ Observable.prototype.zip = function(observable) {
   return this;
 };
 
-Observable.prototype.timeout = function(fn, ms) {
+Observable.prototype.timeout = function(ms) {
   var self = this;
-  this.expirationTimeout = setTimeout(fn, ms);
+  this.expirationTimeout = setTimeout(function() {
+    if (self.errorHandler) {
+      self.errorHandler.call(null, new Error('Application timeout'));
+    }
+
+    self.dispose();
+  }, ms);
   return this;
+};
+
+Observable.prototype.catch = function(errorHandler) {
+  this.errorHandler = errorHandler;
 };
 
 Observable.prototype._clearTimeout = function() {
   if (this.expirationTimeout) {
     clearTimeout(this.expirationTimeout);
+  }
+};
+
+Observable.prototype._throw = function(err) {
+  if (this.errorHandler) {
+    this.errorHandler.call(null, err);
+  } else {
+    throw err;
   }
 };
 
