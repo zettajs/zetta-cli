@@ -8,10 +8,55 @@ var Observable = module.exports = function(query, runtime) {
   this.state = 'ready'; // disposed
   this.remainder = null;
   this.expirationTimeout = null;
+  this.zipped = [];
+  this.zipReturned = {};
+  this.current = [];
+};
+
+Observable.prototype._checkZipped = function(cb) {
+  var self = this;
+  var keys = Object.keys(self.zipReturned);
+
+  if (keys.length === self.zipped.length && self.current.length) {
+    var ready = true;
+
+    keys.forEach(function(key) {
+      if (!self.zipReturned[key].length) {
+        ready = false;
+      }
+    });
+
+    if (!ready) {
+      return;
+    }
+
+    var ret = [];
+    keys.forEach(function(key) {
+      ret.push(self.zipReturned[key].shift());
+    });
+
+    ret.push(self.current.shift());
+
+    cb(null, ret);
+  }
 };
 
 Observable.prototype.subscribe = function(cb) {
   var self = this;
+
+  if (this.zipped.length) {
+    this.zipped.forEach(function(observable, i) {
+      observable.subscribe(function(err, item) {
+        if (!self.zipReturned[i]) {
+          self.zipReturned[i] = [];
+        }
+
+        self.zipReturned[i].push(item);
+
+        self._checkZipped(cb);
+      });
+    });
+  }
 
   // TODO: Make this use a real query language.
   var pair = this.query.split('=');
@@ -40,8 +85,15 @@ Observable.prototype.subscribe = function(cb) {
           self.dispose();
         }
       }
+
       self.logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
-      cb(null, device);
+
+      if (self.zipped.length) {
+        self.current.push(device);
+        self._checkZipped(cb);
+      } else {
+        cb(null, device);
+      }
     }
   }
 
@@ -57,6 +109,11 @@ Observable.prototype.take = function(limit) {
 
 Observable.prototype.first = function() {
   return this.take(1);
+};
+
+Observable.prototype.zip = function(observable) {
+  this.zipped.push(observable);
+  return this;
 };
 
 Observable.prototype.timeout = function(fn, ms) {

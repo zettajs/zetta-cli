@@ -114,9 +114,13 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
 };
 
 FogRuntime.prototype.get = function(name, cb) {
-  return new Observable('name="' + name + '"', this)
-    .first()
-    .subscribe(cb);
+  var observable = new Observable('name="' + name + '"', this).first();
+
+  if (cb) {
+    observable.subscribe(cb);
+  }
+
+  return observable;
 };
 
 FogRuntime.prototype.observe = function(query) {
