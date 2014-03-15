@@ -185,5 +185,8 @@ Observable.prototype._throw = function(err) {
 Observable.prototype.dispose = function() {
   this.state = 'disposed';
   this._clearTimeout();
+  this.zipped.forEach(function(observable) {
+    observable.dispose();
+  });
   return this;
 };
