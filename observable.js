@@ -7,6 +7,7 @@ var Observable = module.exports = function(query, runtime) {
   this.logger = new Logger();
   this.state = 'ready'; // disposed
   this.remainder = null;
+  this.takePredicate = null;
   this.expirationTimeout = null;
   this.zipped = [];
   this.zipReturned = {};
@@ -79,21 +80,39 @@ Observable.prototype.subscribe = function(cb) {
 
     if(device[key] === value) {
       self._clearTimeout();
-      if (self.remainder !== null) {
+
+      var sendResult = function() {
+        self.logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
+
+        if (self.zipped.length) {
+          self.current.push(device);
+          self._checkZipped(cb);
+        } else {
+          cb(null, device);
+        }
+      };
+
+      if (self.takePredicate !== null) {
+        var predicateCallback = function(shouldContinue) {
+          if (shouldContinue) {
+            sendResult();
+            return;
+          }
+
+          self.dispose();
+        };
+
+        self.takePredicate.call(null, device, predicateCallback);
+      } else if (self.remainder !== null) {
         self.remainder--;
         if (self.remainder === 0) {
           self.dispose();
         }
-      }
-
-      self.logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
-
-      if (self.zipped.length) {
-        self.current.push(device);
-        self._checkZipped(cb);
+        sendResult();
       } else {
-        cb(null, device);
+        sendResult();
       }
+
     }
   }
 
@@ -104,6 +123,23 @@ Observable.prototype.subscribe = function(cb) {
 
 Observable.prototype.take = function(limit) {
   this.remainder = limit;
+  return this;
+};
+
+Observable.prototype.takeWhile = function(predicate) {
+  this.takePredicate = predicate;
+  return this;
+};
+
+Observable.prototype.takeUntil = function(predicate) {
+  this.takePredicate = function(device, cb) {
+    var negated = function(shouldContinue) {
+      cb(!shouldContinue);
+    };
+
+    return predicate.call(null, device, negated);
+  };
+
   return this;
 };
 

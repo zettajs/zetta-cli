@@ -26,4 +26,20 @@ HelloApp.prototype.init = function(elroy) {
       elroy.log(err);
       process.exit();
     });
+
+  /*elroy.observe('type="led"')
+    .takeWhile(function(led, cb) {
+      cb(parseInt(led.name[3]) <= 5);
+    })
+    .subscribe(function(err, led) {
+      elroy.expose(led);
+    });*/
+
+  /*elroy.observe('type="led"')
+    .takeUntil(function(led, cb) {
+      cb(parseInt(led.name[3]) > 5);
+    })
+    .subscribe(function(err, led) {
+      elroy.expose(led);
+    });*/
 };
