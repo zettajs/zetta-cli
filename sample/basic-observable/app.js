@@ -7,11 +7,7 @@ HelloApp.prototype.init = function(elroy) {
     .first()
     .subscribe(function(err, led) {
       elroy.expose(led);
-    })
-    .timeout(function() {
-      elroy.log('Application timeout');
-      process.exit();
-    }, 3000)*/
+    });*/
 
   elroy.observe('type="led"')
     .zip(elroy.observe('type="photosensor"'))
@@ -25,6 +21,7 @@ HelloApp.prototype.init = function(elroy) {
       elroy.expose(photosensor);
     })
     .catch(function(err) {
-      console.log('error:', err);
+      elroy.log(err);
+      process.exit();
     });
 };
