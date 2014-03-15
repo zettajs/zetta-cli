@@ -4,8 +4,12 @@ var HelloApp = module.exports = function() {
 
 HelloApp.prototype.init = function(elroy) {
   elroy.observe('type="led"')
-    .take(5)
+    .first()
     .subscribe(function(err, led) {
       elroy.expose(led);
-    });
+    })
+    .timeout(function() {
+      elroy.log('Application timeout');
+      process.exit();
+    }, 3000)
 };

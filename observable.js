@@ -7,6 +7,7 @@ var Observable = module.exports = function(query, runtime) {
   this.logger = new Logger();
   this.state = 'ready'; // disposed
   this.remainder = null;
+  this.expirationTimeout = null;
 };
 
 Observable.prototype.subscribe = function(cb) {
@@ -30,6 +31,7 @@ Observable.prototype.subscribe = function(cb) {
     }
 
     if(device.type === type) {
+      self._clearTimeout();
       if (self.remainder !== null) {
         self.remainder--;
         if (self.remainder === 0) {
@@ -55,7 +57,20 @@ Observable.prototype.first = function() {
   return this.take(1);
 };
 
+Observable.prototype.timeout = function(fn, ms) {
+  var self = this;
+  this.expirationTimeout = setTimeout(fn, ms);
+  return this;
+};
+
+Observable.prototype._clearTimeout = function() {
+  if (this.expirationTimeout) {
+    clearTimeout(this.expirationTimeout);
+  }
+};
+
 Observable.prototype.dispose = function() {
   this.state = 'disposed';
+  this._clearTimeout();
   return this;
 };
