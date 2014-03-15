@@ -51,6 +51,10 @@ Observable.prototype.take = function(limit) {
   return this;
 };
 
+Observable.prototype.first = function() {
+  return this.take(1);
+};
+
 Observable.prototype.dispose = function() {
   this.state = 'disposed';
   return this;
