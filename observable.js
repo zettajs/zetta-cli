@@ -14,11 +14,13 @@ Observable.prototype.subscribe = function(cb) {
   var self = this;
 
   // TODO: Make this use a real query language.
-  var type = this.query.split('"')[1];
+  var pair = this.query.split('=');
+  var key = pair[0];
+  var value = JSON.parse(pair[1]);
 
   var devices = this.registry.devices
     .filter(function(device) {
-      return device.type === type;
+      return device[key] === value;
     })
     .forEach(function(device) {
       setImmediate(function() { cb(null, device); });
@@ -30,7 +32,7 @@ Observable.prototype.subscribe = function(cb) {
       return;
     }
 
-    if(device.type === type) {
+    if(device[key] === value) {
       self._clearTimeout();
       if (self.remainder !== null) {
         self.remainder--;

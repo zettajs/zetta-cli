@@ -114,27 +114,9 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
 };
 
 FogRuntime.prototype.get = function(name, cb) {
-  var self = this;
-
-  var device = this.registry.devices.filter(function(device) {
-    return device.name === name;
-  });
-
-  if(device.length) {
-    setImmediate(function() {
-      cb(null, device[0]);
-    });
-  } else {
-    var getDevice = function(device){
-      if(device.name === name) {
-        l.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
-        self.removeListener('deviceready', getDevice);
-        cb(null, device);
-      }
-    };
-
-    this.on('deviceready', getDevice);
-  }
+  return new Observable('name="' + name + '"', this)
+    .first()
+    .subscribe(cb);
 };
 
 FogRuntime.prototype.observe = function(query) {
