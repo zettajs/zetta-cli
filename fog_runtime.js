@@ -1,10 +1,11 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
+var Rx = require('rx');
 var DevicesResource = require('./api_resources/devices');
 var FogAppLoader = require('./fog_app_loader');
 var Logger = require('./logger');
-var Observable = require('./observable');
 var Registry = require('./registry');
+var RxWrap = require('./observable_rx_wrap');
 var Scientist = require('./scientist');
 
 var l = Logger();
@@ -114,15 +115,59 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
 };
 
 FogRuntime.prototype.get = function(name, cb) {
-  var observable = new Observable('name="' + name + '"', this).first();
+  var query = 'name="' + name + '"';
+  var observable = this.observe(query).first();
 
   if (cb) {
-    observable.subscribe(cb);
+    observable.subscribe(function(device) {
+      cb(null, device);
+    });
   }
 
   return observable;
 };
 
+var observableCallback = function(opts) {
+  function fn(observer) {
+    // TODO: Make this use a real query language.
+    var pair = opts.query.split('=');
+    var key = pair[0];
+    var value = JSON.parse(pair[1]);
+
+    var devices = opts.registry.devices
+      .filter(function(device) {
+        return device[key] === value;
+      })
+      .forEach(function(device) {
+        setImmediate(function() { observer.onNext(device); });
+      });
+
+    var getDevice = function(device){
+      if(device[key] === value) {
+        opts.logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
+        observer.onNext(device);
+      }
+    }
+
+    opts.runtime.on('deviceready', getDevice);
+
+    return function() {
+      opts.runtime.removeListener('deviceready', getDevice);
+    };
+  }
+
+  return fn;
+};
+
 FogRuntime.prototype.observe = function(query) {
-  return new Observable(query, this);
+  var options = {
+    query: query,
+    runtime: this,
+    registry: this.registry,
+    logger: l
+  };
+
+  var observable = Rx.Observable.create(observableCallback(options));
+
+  return RxWrap.create(observable);
 };

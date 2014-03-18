@@ -7,7 +7,11 @@ HelloApp.prototype.init = function(elroy) {
     .zip(elroy.observe('type="photosensor"'))
     .first()
     .timeout(3000)
-    .subscribe(function(err, devices) {
+    .catch(function(err) {
+      elroy.log(err);
+      process.exit();
+    })
+    .subscribe(function(devices) {
       var led = devices[0];
       var photosensor = devices[1];
 
@@ -21,25 +25,13 @@ HelloApp.prototype.init = function(elroy) {
 
       elroy.expose(led);
       elroy.expose(photosensor);
-    })
-    .catch(function(err) {
-      elroy.log(err);
-      process.exit();
     });
 
   /*elroy.observe('type="led"')
-    .takeWhile(function(led, cb) {
-      cb(parseInt(led.name[3]) <= 5);
+    .takeWhile(function(led) {
+      return parseInt(led.name[3]) <= 5;
     })
-    .subscribe(function(err, led) {
-      elroy.expose(led);
-    });*/
-
-  /*elroy.observe('type="led"')
-    .takeUntil(function(led, cb) {
-      cb(parseInt(led.name[3]) > 5);
-    })
-    .subscribe(function(err, led) {
+    .subscribe(function(led) {
       elroy.expose(led);
     });*/
 };
