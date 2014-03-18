@@ -23,7 +23,7 @@ HelloApp.prototype.init = function(elroy) {
 
   elroy.get('joes-office-photosensor')
     .zip(elroy.get('joes-office-led'))
-    .subscribe(function(err, devices) {
+    .subscribe(function(devices) {
       var photosensor = devices[0];
       var led = devices[1];
 
@@ -39,4 +39,3 @@ HelloApp.prototype.init = function(elroy) {
       elroy.expose(photosensor);
     });
 };
-
