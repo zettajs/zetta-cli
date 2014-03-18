@@ -149,7 +149,9 @@ var observableCallback = function(query, runtime, registry, logger) {
 FogRuntime.prototype.get = function(name, cb) {
   //var observable = new Observable('name="' + name + '"', this).first();
   var query = 'name="' + name + '"';
-  var observable = Rx.Observable.create(observableCallback(query, this, this.registry, l));
+  var observable = Rx.Observable
+    .create(observableCallback(query, this, this.registry, l))
+    .first();
 
   if (cb) {
     observable.subscribe(cb);
