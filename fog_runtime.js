@@ -154,7 +154,9 @@ FogRuntime.prototype.get = function(name, cb) {
     .first();
 
   if (cb) {
-    observable.subscribe(cb);
+    observable.subscribe(function(device) {
+      cb(null, device);
+    });
   }
 
   return observable;
