@@ -12,7 +12,8 @@
     "colors": "~0.6.2",
     "bunyan": "~0.22.1",
     "strftime": "~0.8.0",
-    "elroy-ws-reconnect": "0.0.1"
+    "elroy-ws-reconnect": "0.0.1",
+    "rx": "~2.2.15"
   },
   "devDependencies": {},
   "scripts": {

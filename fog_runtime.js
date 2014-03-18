@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
+var Rx = require('rx');
 var DevicesResource = require('./api_resources/devices');
 var FogAppLoader = require('./fog_app_loader');
 var Logger = require('./logger');
@@ -113,8 +114,42 @@ FogRuntime.prototype.loadApps = function(apps, cb) {
   cb();
 };
 
+var observableCallback = function(query, runtime, registry, logger) {
+  function fn(observer) {
+    // TODO: Make this use a real query language.
+    var pair = query.split('=');
+    var key = pair[0];
+    var value = JSON.parse(pair[1]);
+
+    var devices = registry.devices
+      .filter(function(device) {
+        return device[key] === value;
+      })
+      .forEach(function(device) {
+        setImmediate(function() { observer.onNext(device); });
+      });
+
+    var getDevice = function(device){
+      if(device[key] === value) {
+        logger.emit('log', 'fog-runtime', 'Device retrieved '+device.name);
+        observer.onNext(device);
+      }
+    }
+
+    runtime.on('deviceready', getDevice);
+
+    return function() {
+      runtime.removeListener('deviceready', getDevice);
+    };
+  }
+
+  return fn;
+};
+
 FogRuntime.prototype.get = function(name, cb) {
-  var observable = new Observable('name="' + name + '"', this).first();
+  //var observable = new Observable('name="' + name + '"', this).first();
+  var query = 'name="' + name + '"';
+  var observable = Rx.Observable.create(observableCallback(query, this, this.registry, l));
 
   if (cb) {
     observable.subscribe(cb);
@@ -124,5 +159,6 @@ FogRuntime.prototype.get = function(name, cb) {
 };
 
 FogRuntime.prototype.observe = function(query) {
-  return new Observable(query, this);
+  //return new Observable(query, this);
+  return Rx.Observable.create(observableCallback(query, this, this.registry, l));
 };

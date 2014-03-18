@@ -4,10 +4,16 @@ var HelloApp = module.exports = function() {
 
 HelloApp.prototype.init = function(elroy) {
   elroy.observe('type="led"')
-    .zip(elroy.observe('type="photosensor"'))
+    .zip(elroy.observe('type="photosensor"'), function(led, photosensor) {
+      return [led, photosensor];
+    })
     .first()
     .timeout(3000)
-    .subscribe(function(err, devices) {
+    .catch(function(err) {
+      elroy.log(err);
+      process.exit();
+    })
+    .subscribe(function(devices) {
       var led = devices[0];
       var photosensor = devices[1];
 
@@ -21,10 +27,6 @@ HelloApp.prototype.init = function(elroy) {
 
       elroy.expose(led);
       elroy.expose(photosensor);
-    })
-    .catch(function(err) {
-      elroy.log(err);
-      process.exit();
     });
 
   /*elroy.observe('type="led"')
