@@ -119,9 +119,15 @@ FogRuntime.prototype.get = function(name, cb) {
   var observable = this.observe(query).first();
 
   if (cb) {
-    observable.subscribe(function(device) {
-      cb(null, device);
-    });
+    observable
+      .catch(function(err) {
+        cb(err);
+      })
+      .subscribe(function(device) {
+        cb(null, device);
+      });
+
+    return;
   }
 
   return observable;
@@ -139,7 +145,9 @@ var observableCallback = function(opts) {
         return device[key] === value;
       })
       .forEach(function(device) {
-        setImmediate(function() { observer.onNext(device); });
+        setImmediate(function() {
+          observer.onNext(device);
+        });
       });
 
     var getDevice = function(device){
