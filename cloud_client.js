@@ -70,13 +70,6 @@ module.exports = function(argo, wss, cb) {
     console.error(e.stack);
   });*/
 
-  /*var fake = new FakeSocket();
-
-  fake.onwrite = function(data) {
-    console.log('fake.onwrite');
-    ws.send(data, { binary: true });
-  };*/
-
   /*ws.on('message', function(data) {
     console.log('on message');
     console.log(data);
