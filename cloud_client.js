@@ -10,15 +10,15 @@ var l = Logger();
 module.exports = function(argo, wss, cb) {
   var ws = new WebSocket(wss,{pingInterval : 5000});
   //var ws = new WebSocket(url);
-  pubsub.setSocket(ws);
+  //pubsub.setSocket(ws);
 
-  ws.on('connect', function(socket) {
+  /*ws.on('connect', function(socket) {
     l.emit('log', 'cloud-client', 'Connection made to the cloud. '+wss);
   });
 
   ws.on('disconnect', function(err) {
     l.emit('log', 'cloud-client', 'Disconnected from the cloud server. '+wss );
-  });
+  });*/
 
   ws.on('error', function(e) {
     console.log('error');
@@ -48,20 +48,27 @@ module.exports = function(argo, wss, cb) {
     ssl: false
   }, app.run);
 
-  server.on('stream', function(socket) {
-    console.log('on stream!');
-  });
-
   ws.on('open', function() {
-    pubsub.setSocket(ws);
+    //pubsub.setSocket(ws);
     //server.emit('connection', fake);
-    console.log(ws._socket);
+    //console.log(ws._socket);
+    /*ws._socket.on('data', function(chunk) {
+      console.log(chunk.length);
+      console.log(chunk.toString());
+    });*/
+    /*ws._socket.on('readable', function() {
+      var data;
+      while (data = ws._socket.read()) {
+        console.log(data);
+      }
+    });*/
+    ws._socket.removeAllListeners();
     server.emit('connection', ws._socket);
   });
 
-  ws.on('error', function(e) {
+  /*ws.on('error', function(e) {
     console.error(e.stack);
-  });
+  });*/
 
   /*var fake = new FakeSocket();
 
@@ -70,11 +77,11 @@ module.exports = function(argo, wss, cb) {
     ws.send(data, { binary: true });
   };*/
 
-  ws.on('message', function(data) {
+  /*ws.on('message', function(data) {
     console.log('on message');
     console.log(data);
     //fake.source.write(data);
-  });
+  });*/
   
   cb(server);
 };
