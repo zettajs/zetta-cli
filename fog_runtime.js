@@ -55,13 +55,14 @@ FogRuntime.prototype.loadScouts = function(cb) {
     scout = new scout();
 
     scout.on('discover', function() {
-      var machine = Scientist.configure.apply(null,arguments);
+      var machine = Scientist.create.apply(null,arguments);
       var found = self.deviceInRegistry(machine,scout.compare);
       l.emit('log', 'fog-runtime', 'Discovered new device '+machine.type);
       if(!found){
-        self.registry.add(machine,function(){
-          l.emit('log', 'fog-runtime', 'Device ready '+machine.type);
-          self.emit('deviceready', machine);
+        var initializedMachine = Scientist.init(machine);
+        self.registry.add(initializedMachine,function(){
+          l.emit('log', 'fog-runtime', 'Device ready '+initializedMachine.type);
+          self.emit('deviceready', initializedMachine);
 
         });
       }
