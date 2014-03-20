@@ -57,7 +57,6 @@ FogRuntime.prototype.loadScouts = function(cb) {
     scout.on('discover', function() {
       var machine = Scientist.create.apply(null,arguments);
       var found = self.deviceInRegistry(machine,scout.compare);
-      l.emit('log', 'fog-runtime', 'Discovered new device '+machine.type);
       if(!found){
         var initializedMachine = Scientist.init(machine);
         self.registry.add(initializedMachine,function(){
