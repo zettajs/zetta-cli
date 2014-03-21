@@ -1,75 +1,44 @@
-
-
 var Duplex = require('stream').Duplex;
 var util = require('util');
+var BufferSource = require('./buffer_source');
 
-var FakeSocket = module.exports = function() {
+var FakeSocket = module.exports = function(initial) {
   Duplex.call(this);
 
   this.source = new BufferSource();
 
-  this.on('finish', function() {
-    this.source.state = 'ready';
-  });
-
   var self = this;
-  this.source.ondata = function(chunk) {
+  this.source.onread = function(chunk) {
+    console.log('fake socket pushing chunk');
     if (!self.push(chunk)) {
+      console.log('stopping read');
       self.source.readStop();
     }
   };
 
-  this.source.onend = function() {
+  this.source.ending = function() {
     self.push(null);
   };
+
+  this.onwrite = null;
+
+  this.on('end', function() {
+    console.log('ending'.toUpperCase());
+    this.ending();
+  });
 };
 util.inherits(FakeSocket, Duplex);
 
-FakeSocket.prototype.setTimeout = function() { };
-FakeSocket.prototype.destroy = function() { };
-FakeSocket.prototype.destroySoon = function() { };
+['setTimeout', 'destroy', 'destroySoon'].forEach(function(fn) {
+  FakeSocket.prototype[fn] = new Function();
+});
 
 FakeSocket.prototype._write = function(chunk, encoding, cb) {
-  this.source.write(chunk);
+  console.log('FAKESOCKET _WRITE!!!!!');
+  this.onwrite(chunk);
   cb();
 };
 
 FakeSocket.prototype._read = function(size) {
-  return this.source.readStart();
-};
-
-var BufferSource = function() {
-  this.state = 'initialized'; // 'ready', 'stopped'
-  this.buffer = [];
-  this.ondata = null;
-  this.onend = null;
-
-  var self = this;
-};
-
-BufferSource.prototype.readStart = function() {
-  var self = this;
-  var id = setInterval(function() {
-    if (self.state === 'stopped') {
-      clearInterval(id);
-      return;
-    }
-
-    if (self.state !== 'initialized') {
-      if (self.buffer.length === 0) {
-        self.state = 'stopped'
-        self.onend();
-      } else {
-        self.ondata(self.buffer.shift());
-      }
-    }
-  }, 1);
-};
-
-BufferSource.prototype.readStop = function() {
-  this.state = 'paused';
-};
-
-BufferSource.prototype.write = function(chunk) {
-  this.buffer.push(chunk);
+  return this.source.readStart(size);
 };

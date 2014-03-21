@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var argo = require('argo');
+var spdy = require('spdy');
 var titan = require('titan');
 var siren = require('argo-formatter-siren');
 var CloudClient = require('./cloud_client');
@@ -28,6 +29,11 @@ module.exports = function run(appName){
   var l = Logger();
 
   var server = argo()
+    .use(function(handle) {
+      handle('request', function(env, next) {
+        next(env);
+      });
+    })
     .use(titan)
     .allow('*')
     .add(PubSubResource)
@@ -41,7 +47,6 @@ module.exports = function run(appName){
     var apps = [app];
     fog.loadApps(apps, function() {
       var host = process.env.ELROY_CLOUD || 'ws://elroy-cloud.herokuapp.com';
-      //var host = 'ws://localhost:3000';
       l.emit('log', 'fog-bootstrapper', 'connecting to cloud endpoint at: '+host+' via websocket');
       CloudClient(server, host, function(server){
         server.listen(3002);
