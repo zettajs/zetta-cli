@@ -18,12 +18,11 @@ Subscription.prototype.subscribe = function(env, next) {
   var self = this;
   env.request.getBody(function(err, body) {
     if(err) {
-      console.log(err);
       env.response.statusCode = 400;
       next(env);
     } else {
       body = qs.parse(body.toString());
-      pubsub.subscribe(body.name); 
+      pubsub.subscribe(env.response, body.name); 
       //next(env);
     }
   });
