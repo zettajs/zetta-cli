@@ -2,30 +2,28 @@ var Logger = require('./logger');
 var l = Logger();
 
 var subscribedTo = [];
-var socket;
+var response;
  
-exports.setSocket = function(s) {
-  socket = s;
-};
-
 exports.publish = function(name, data) {
   if(subscribedTo.indexOf(name) !== -1) {
-    if(socket) {
+    if(response) {
       if (typeof data === 'object') {
         data = JSON.stringify(data);
+      } else {
+        data = data.toString();
       }
 
-      var httpResponse = 'HTTP/1.1 200 OK\r\n';
-      httpResponse += 'elroy-queue-name:'+name+'\r\n\r\n';
-      httpResponse += data;
-      socket.send(httpResponse);
+      var stream = response.push(name, { 'Host': 'fog.argo.cx' });
+
+      stream.end(new Buffer(data));
     } else {
-      console.log('no socket');
+      console.error('no response object');
     }
   }
 };
 
-exports.subscribe = function(name) {
+exports.subscribe = function(res, name) {
+  response = res;
   if (subscribedTo.indexOf(name) === -1) {
     l.emit('log', 'fog-runtime', 'Created subscription to stream '+name);
     subscribedTo.push(name);
