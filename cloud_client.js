@@ -1,15 +1,16 @@
 var spdy = require('spdy');
 var argo = require('argo');
 //var WebSocket = require('elroy-ws-reconnect');
-var WebSocket = require('ws');
+//var WebSocket = require('ws');
+var WebSocket = require('./web_socket');
 var pubsub = require('./pubsub_service');
 
 var Logger = require('./logger');
 var l = Logger();
 
 module.exports = function(argo, wss, cb) {
-  var ws = new WebSocket(wss,{pingInterval : 5000});
-  //var ws = new WebSocket(url);
+  //var ws = new WebSocket(wss,{pingInterval : 5000});
+  var ws = new WebSocket(wss);
   //pubsub.setSocket(ws);
 
   /*ws.on('connect', function(socket) {
@@ -21,8 +22,7 @@ module.exports = function(argo, wss, cb) {
   });*/
 
   ws.on('error', function(e) {
-    console.log('error');
-    console.log(e);
+    console.log('error:', e);
   });
 
   var app = argo
@@ -48,7 +48,8 @@ module.exports = function(argo, wss, cb) {
     ssl: false
   }, app.run);
 
-  ws.on('open', function() {
+  ws.on('open', function(socket) {
+    //ws._socket.removeAllListeners();
     //pubsub.setSocket(ws);
     //server.emit('connection', fake);
     //console.log(ws._socket);
@@ -59,11 +60,14 @@ module.exports = function(argo, wss, cb) {
     /*ws._socket.on('readable', function() {
       var data;
       while (data = ws._socket.read()) {
-        console.log(data);
+        console.log('reading data:', data);
       }
     });*/
-    ws._socket.removeAllListeners();
-    server.emit('connection', ws._socket);
+    /*ws._socket.write = function(buf, type, cb) {
+      console.log('writing to socket:', buf);
+      if (cb) cb();
+    };*/
+    server.emit('connection', socket);
   });
 
   /*ws.on('error', function(e) {
