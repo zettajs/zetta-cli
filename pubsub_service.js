@@ -15,6 +15,14 @@ exports.publish = function(name, data) {
 
       var stream = response.push(name, { 'Host': 'fog.argo.cx' });
 
+      stream.on('error', function(err) {
+        if (err.message === 'Received error: 3') {
+          stream.end();
+        } else {
+          console.error(err);
+        }
+      });
+
       stream.end(new Buffer(data));
     } else {
       console.error('no response object');

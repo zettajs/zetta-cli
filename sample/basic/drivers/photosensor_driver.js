@@ -14,7 +14,7 @@ PhotosensorDriver.prototype.init = function(config) {
 PhotosensorDriver.prototype.onValue = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.floor(Math.random() * 100));
-  }, 2000);
+  }, 32);
 
   /*this.board.on('digitalChange', function(e) {
     emitter.emit('data', e.value);
