@@ -1,5 +1,6 @@
 var querystring = require('querystring');
 var url = require('url');
+var multiparty = require('multiparty');
 
 var buildActions = exports.buildActions = function(env, machine) {
   var actions = null;
@@ -103,7 +104,6 @@ exports.create = function(loader) {
   AppResource.prototype.init = function(config) {
     config.path(this.path)
       .produces('application/vnd.siren+json')
-      .consumes('application/x-www-form-urlencoded')
       .get('/', this.home)
       .get('/{splat: (.*)}', this.show)
       .post('/{splat: (.*)}', this.action)
@@ -162,14 +162,30 @@ exports.create = function(loader) {
     }
 
     var actions = buildActions(env, machine);
+   
 
-    env.request.getBody(function(err, body) {
-      body = querystring.parse(body.toString());
+    if(env.request.headers['content-type'] !== 'application/x-www-form-urlencoded'){
+      var form = new multiparty.Form();
+      form.parse(env.request, function(err, fields, files) {
+	console.log(err);
+	return run(fields);
+      });
+    }else{
+      env.request.getBody(function(err, body) {
+	body = querystring.parse(body.toString());
+	console.log(body);
+	return run(body);
+      });
+    }
+
+    function run(body){
 
       if (!body.action) {
         env.response.statusCode = 400;
         return next(env);
       }
+      
+      console.log(body)
 
       var action = actions.filter(function(action) {
         return (action.name === body.action);
@@ -206,8 +222,9 @@ exports.create = function(loader) {
       args.push(cb);
 
       machine.call.apply(machine, args);
+    }
 
-    });
+
   };
 
   return AppResource;
