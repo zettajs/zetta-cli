@@ -22,8 +22,13 @@ Subscription.prototype.subscribe = function(env, next) {
       next(env);
     } else {
       body = qs.parse(body.toString());
-      pubsub.subscribe(env.response, body.name); 
-      //next(env);
+      if (body.name) {
+        pubsub.subscribe(env.response, body.name); 
+        env.response.connection.setTimeout(0); // keep connection alive
+      } else {
+        env.response.statusCode = 404;
+        next(env);
+      }
     }
   });
 };
