@@ -14,7 +14,7 @@
     "strftime": "~0.8.0",
     "elroy-ws-reconnect": "0.0.1",
     "rx": "~2.2.15",
-    "spdy": "~1.19.3"
+    "spdy": ">=1.24.0"
   },
   "devDependencies": {},
   "scripts": {

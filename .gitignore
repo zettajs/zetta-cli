@@ -7,3 +7,5 @@ argo-HEAD
 argo-jscoverage
 registry.json
 *~
+*.log
+*.heapsnapshot
