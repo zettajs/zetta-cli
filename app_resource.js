@@ -164,12 +164,31 @@ exports.create = function(loader) {
    
 
     if(env.multiparty){
-      return run(env.multiparty.fields);
+      //Multiparty doesn't parse things out like the qs module. We have to make it consistent.
+      var qsObject = {};
+      Object.keys(env.multiparty.fields).forEach(function(key) {
+        var value = env.multiparty.fields[key];
+        if(value.length > 1) {
+          qsObject[key] = value;
+        } else {
+          qsObject[key] = value[0];
+        }
+      });
+      
+      //Here we'll iterate through parsed out files that have been uploaded. We'll create readstreams from them and add them to the QS object
+      //We're doing this because how transitions are called with arguments.
+      //TODO: Clean this object parsing up. 
+      Object.keys(env.multiparty.files).forEach(function(key) {
+        var data = env.multiparty.files[key][0];
+        qsObject[key] = fs.createReadStream(data.path);
+      });
+
+      return run(qsObject);
     }else{
       env.request.getBody(function(err, body) {
-	body = querystring.parse(body.toString());
-	console.log(body);
-	return run(body);
+        body = querystring.parse(body.toString());
+        console.log(body);
+        return run(body);
       });
     }
 
@@ -180,7 +199,6 @@ exports.create = function(loader) {
         return next(env);
       }
       
-      console.log(body)
 
       var action = actions.filter(function(action) {
         return (action.name === body.action);
