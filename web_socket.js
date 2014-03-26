@@ -40,10 +40,15 @@ var WebSocket = module.exports = function(address) {
       return;
     }
 
+    req.connection.on('close', function() {
+      self.emit('close');
+    });
+
     self.emit('open', req.connection);
   });
 
-  req.on('error', function(e) { this.emit('error', e); });
+  req.on('error', function(e) { self.emit('error', e); });
   req.end();
+
 };
 util.inherits(WebSocket, EventEmitter);

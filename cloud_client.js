@@ -6,13 +6,47 @@ var pubsub = require('./pubsub_service');
 var Logger = require('./logger');
 var l = Logger();
 
-module.exports = function(argo, wss, cb) {
-  var ws = new WebSocket(wss);
+var connected = false;
+var interval = null;
 
-  ws.on('error', function(e) {
-    console.error('error:', e);
+var RETRY_INTERVAL = 3000;
+
+function createSocket(url, server) {
+  var ws = new WebSocket(url);
+  ws.on('open', function(socket) {
+    connected = true;
+    l.emit('log', 'cloud-client', 'Cloud connection established (' + url + ')');
+    server.emit('connection', socket);
   });
 
+  ws.on('error', function(err) {
+    connected = false;
+    l.emit('log', 'cloud-client', 'Cloud connection error (' + url + '): ' + err);
+    reconnect();
+  });
+
+  ws.on('close', function() {
+    connected = false;
+    l.emit('log', 'cloud-client', 'Cloud connection closed (' + url + ')');
+    reconnect();
+  });
+
+  function reconnect() {
+    if (interval) {
+      clearInterval(interval);
+    }
+
+    interval = setInterval(function() {
+      if (connected) {
+        clearInterval(interval);
+      } else {
+        createSocket(url, server);
+      }
+    }, RETRY_INTERVAL);
+  };
+};
+
+module.exports = function(argo, url, cb) {
   var app = argo
     .use(function(handle) {
       handle('request', function(env, next) {
@@ -33,9 +67,7 @@ module.exports = function(argo, wss, cb) {
     ssl: false
   }, app.run);
 
-  ws.on('open', function(socket) {
-    server.emit('connection', socket);
-  });
+  createSocket(url, server);
   
   cb(server);
 };
