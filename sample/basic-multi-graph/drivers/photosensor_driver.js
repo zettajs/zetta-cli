@@ -7,20 +7,13 @@ var PhotosensorDriver = module.exports = function() {
 };
 
 PhotosensorDriver.prototype.init = function(config) {
-  config
-    .stream('value1', this.onValue)
-    .stream('value2', this.onValue)
-    .stream('value3', this.onValue)
-    .stream('value4', this.onValue)
-    .stream('value5', this.onValue);
+  for (var i = 1; i <= 12; i++) {
+    config.stream('value' + i, this.onValue);
+  };
 };
 
 PhotosensorDriver.prototype.onValue = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.floor(Math.random() * 100));
   }, 32);
-
-  /*this.board.on('digitalChange', function(e) {
-    emitter.emit('data', e.value);
-  });*/
 };
