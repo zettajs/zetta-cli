@@ -1,6 +1,5 @@
 var querystring = require('querystring');
 var url = require('url');
-var multiparty = require('multiparty');
 
 var buildActions = exports.buildActions = function(env, machine) {
   var actions = null;
@@ -164,12 +163,8 @@ exports.create = function(loader) {
     var actions = buildActions(env, machine);
    
 
-    if(env.request.headers['content-type'] !== 'application/x-www-form-urlencoded'){
-      var form = new multiparty.Form();
-      form.parse(env.request, function(err, fields, files) {
-	console.log(err);
-	return run(fields);
-      });
+    if(env.multiparty){
+      return run(env.multiparty.fields);
     }else{
       env.request.getBody(function(err, body) {
 	body = querystring.parse(body.toString());
