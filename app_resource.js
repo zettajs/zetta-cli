@@ -175,12 +175,8 @@ exports.create = function(loader) {
         }
       });
       
-      //Here we'll iterate through parsed out files that have been uploaded. We'll create readstreams from them and add them to the QS object
-      //We're doing this because how transitions are called with arguments.
-      //TODO: Clean this object parsing up. 
       Object.keys(env.multiparty.files).forEach(function(key) {
-        var data = env.multiparty.files[key][0];
-        qsObject[key] = fs.createReadStream(data.path);
+	qsObject[key] = env.multiparty.files[key][0];
       });
 
       return run(qsObject);
@@ -198,7 +194,6 @@ exports.create = function(loader) {
         env.response.statusCode = 400;
         return next(env);
       }
-      
 
       var action = actions.filter(function(action) {
         return (action.name === body.action);
