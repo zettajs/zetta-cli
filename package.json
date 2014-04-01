@@ -14,7 +14,7 @@
     "rx": "~2.2.15",
     "spdy": ">=1.24.0",
     "multiparty": "^3.2.3",
-    "argo-multiparty": "0.0.1"
+    "argo-multiparty": "0.0.3"
   },
   "devDependencies": {},
   "scripts": {
