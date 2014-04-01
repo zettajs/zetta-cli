@@ -12,7 +12,9 @@
     "bunyan": "~0.22.1",
     "strftime": "~0.8.0",
     "rx": "~2.2.15",
-    "spdy": ">=1.24.0"
+    "spdy": ">=1.24.0",
+    "multiparty": "^3.2.3",
+    "argo-multiparty": "0.0.1"
   },
   "devDependencies": {},
   "scripts": {

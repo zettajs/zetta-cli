@@ -4,6 +4,7 @@ var argo = require('argo');
 var spdy = require('spdy');
 var titan = require('titan');
 var siren = require('argo-formatter-siren');
+var multiparty = require('argo-multiparty');
 var CloudClient = require('./cloud_client');
 var FogRuntime = require('./fog_runtime');
 var PubSubResource = require('./pubsub_resource');
@@ -36,6 +37,7 @@ module.exports = function run(appName){
     })
     .use(titan)
     .allow('*')
+    .use(multiparty)
     .add(PubSubResource)
     .format({ directory : path.join(__dirname,'api_formats'), engines: [siren], override: {'application/json': siren}});
     //.logger();
