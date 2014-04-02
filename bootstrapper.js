@@ -17,6 +17,7 @@ module.exports = function run(appName){
   var app = path.resolve(file);
   var dir = path.dirname(app);
   var app = require(app);
+  var configPath = path.join(dir, 'config.js');
 
   var scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
     if (/^.+\.js$/.test(scoutPath)) {
@@ -45,13 +46,21 @@ module.exports = function run(appName){
 
   l.emit('log', 'fog-bootstrapper', 'bootstrapping fog siren hypermedia API.');
   var fog = new FogRuntime(server, scouts);
-  fog.init(function(err) {
-    var apps = [app];
-    fog.loadApps(apps, function() {
-      var host = process.env.ELROY_CLOUD || 'ws://elroy-cloud.herokuapp.com';
-      l.emit('log', 'fog-bootstrapper', 'connecting to cloud endpoint at: '+host+' via websocket');
-      CloudClient(server, host, function(server){
-        server.listen(3002);
+
+  fs.stat(configPath, function(err, stat) {
+    if (!err) {
+      var config = require(configPath);
+      config(fog);
+    }
+
+    fog.init(function(err) {
+      var apps = [app];
+      fog.loadApps(apps, function() {
+        var host = process.env.ELROY_CLOUD || 'ws://elroy-cloud.herokuapp.com';
+        l.emit('log', 'fog-bootstrapper', 'connecting to cloud endpoint at: '+host+' via websocket');
+        CloudClient(server, host, function(server){
+          server.listen(3002);
+        });
       });
     });
   });
