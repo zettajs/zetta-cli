@@ -103,6 +103,8 @@ exports.create = function(loader) {
   AppResource.prototype.init = function(config) {
     config.path(this.path)
       .produces('application/vnd.siren+json')
+      .consumes('application/x-www-form-urlencoded')
+      .consumes('multipart/form-data')
       .get('/', this.home)
       .get('/{splat: (.*)}', this.show)
       .post('/{splat: (.*)}', this.action)
@@ -183,7 +185,6 @@ exports.create = function(loader) {
     }else{
       env.request.getBody(function(err, body) {
         body = querystring.parse(body.toString());
-        console.log(body);
         return run(body);
       });
     }
