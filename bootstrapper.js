@@ -19,16 +19,22 @@ module.exports = function run(appName){
   var app = require(app);
   var configPath = path.join(dir, 'config.js');
 
-  var scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
-    if (/^.+\.js$/.test(scoutPath)) {
-      return scoutPath;
-    }
-  }).map(function(scoutPath) {
-    return require(path.join(dir, 'scouts', scoutPath));
-  });
-
   //Wire up the logger here.
   var l = Logger();
+
+  var scouts = [];
+  try {
+    scouts = fs.readdirSync(path.join(dir, 'scouts')).filter(function(scoutPath) {
+      if (/^.+\.js$/.test(scoutPath)) {
+        return scoutPath;
+      }
+    }).map(function(scoutPath) {
+      return require(path.join(dir, 'scouts', scoutPath));
+    });
+  } catch(e) {
+    l.emit('log', 'fog-bootstrapper', 'Scout directory not found. Skipping.');
+    scouts = [];
+  }
 
   var server = argo()
     .use(function(handle) {
