@@ -23,7 +23,7 @@ var MachineConfig = module.exports = function(machine) {
     var properties = {};
     var self = this;
     Object.keys(self).forEach(function(key) {
-      if (reserved.indexOf(key) === -1 && typeof self[key] !== 'function') {
+      if (reserved.indexOf(key) === -1 && typeof self[key] !== 'function' && key[0] !== '_') {
         properties[key] = self[key];
       }
     });
