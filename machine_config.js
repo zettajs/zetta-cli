@@ -96,7 +96,7 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
 
     var properties = {};
     Object.keys(self.machine).forEach(function(key) {
-      if (typeof self.machine[key] !== 'function' && ['transitions', 'allowed', 'properties'].indexOf(key) === -1) {
+      if (key[0] !== '_' && typeof self.machine[key] !== 'function' && ['transitions', 'allowed', 'properties'].indexOf(key) === -1) {
         properties[key] = self.machine[key];
       }
     });
@@ -120,6 +120,10 @@ MachineConfig.prototype.call = function(/* type, ...args */) {
   var handlerArgs = rest.concat([cb]);
   
   if (this.transitions[type]) {
+    if(this.transitions[type].handler === undefined){
+      throw new Error('Machine does not implement transition '+type);
+      return;
+    }
     this.transitions[type].handler.apply(this.machine, handlerArgs);
   }
 };

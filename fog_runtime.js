@@ -84,6 +84,7 @@ FogRuntime.prototype.loadScouts = function(cb) {
           self.registry.devices.push(machine);
           l.emit('log', 'fog-runtime', 'Device ready '+machine.type+' initialized from registry');
           self.emit('deviceready', machine);
+	  self.registry.save(function(){});
         });
       });
       
