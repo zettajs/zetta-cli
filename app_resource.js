@@ -69,6 +69,7 @@ var buildEntity = exports.buildEntity = function buildEntity(loader, env, machin
       var path = env.helpers.url.join(device.name);
       return buildEntity(env, device, null, path)
     });
+    
   }
 
   if (entity.actions) {
@@ -129,7 +130,18 @@ exports.create = function(loader) {
         links: [ { rel: ['self'], href: env.helpers.url.path(path) } ]
       })
     });
+    
+    entity.entities = entity.entities.sort(function(a,b){
+      if(a.properties.name < b.properties.name)
+	return -1;
+      else if(a.properties.name > b.properties.name)
+	return 1;
+      else
+	return 0;
+    });
 
+
+    
     env.response.body = entity;
     next(env);
   };
