@@ -2,9 +2,9 @@ var HelloApp = module.exports = function() {
   this.name = 'hello';
 };
 
-HelloApp.prototype.init = function(elroy) {
-  elroy.observe('type="led"')
-    .zip(elroy.observe('type="photosensor"'))
+HelloApp.prototype.init = function(zetta) {
+  zetta.observe('type="led"')
+    .zip(zetta.observe('type="photosensor"'))
     .first()
     .subscribe(function(devices) {
       var led = devices[0];
@@ -18,7 +18,7 @@ HelloApp.prototype.init = function(elroy) {
         }
       });
 
-      elroy.expose(led);
-      elroy.expose(photosensor);
+      zetta.expose(led);
+      zetta.expose(photosensor);
     });
 };

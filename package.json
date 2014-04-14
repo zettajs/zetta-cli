@@ -1,5 +1,5 @@
 {
-  "name": "elroy",
+  "name": "zetta",
   "version": "0.0.15",
   "description": "",
   "main": "elroy.js",
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/argo/elroy.git"
+    "url": "git://github.com/zettajs/zetta.git"
   },
   "author": "",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/argo/elroy/issues"
+    "url": "https://github.com/zettajs/zetta/issues"
   },
   "bin": {
-    "elroy": "cli.js"
+    "zetta": "cli.js"
   }
 }

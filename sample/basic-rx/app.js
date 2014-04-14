@@ -4,9 +4,9 @@ var BasicRxApp = module.exports = function() {
   this.name = 'basic-rx';
 };
 
-BasicRxApp.prototype.init = function(elroy) {
-  elroy.get('joes-office-photosensor', function(err, photosensor) {
-    elroy.get('joes-office-led', function(err, led) {
+BasicRxApp.prototype.init = function(zetta) {
+  zetta.get('joes-office-photosensor', function(err, photosensor) {
+    zetta.get('joes-office-led', function(err, led) {
       //photosensor.valueSubject.subscribe(function(value) {
       photosensor.on('change', function(value) {
         if (value < 30 && led.state === 'off') {
@@ -16,13 +16,13 @@ BasicRxApp.prototype.init = function(elroy) {
         }
       });
 
-      elroy.expose(led);
-      elroy.expose(photosensor);
+      zetta.expose(led);
+      zetta.expose(photosensor);
     });
   });
 
-  /*elroy.get('joes-office-photosensor')
-    .zip(elroy.get('joes-office-led'))
+  /*zetta.get('joes-office-photosensor')
+    .zip(zetta.get('joes-office-led'))
     .subscribe(function(devices) {
       var photosensor = devices[0];
       var led = devices[1];
@@ -35,7 +35,7 @@ BasicRxApp.prototype.init = function(elroy) {
         }
       });
 
-      elroy.expose(led);
-      elroy.expose(photosensor);
+      zetta.expose(led);
+      zetta.expose(photosensor);
     });*/
 };

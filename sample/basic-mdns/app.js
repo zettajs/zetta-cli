@@ -2,8 +2,8 @@ var HelloApp = module.exports = function() {
   this.name = 'hello';
 };
 
-HelloApp.prototype.init = function(elroy, cb) {
-  elroy.get('blinker', function(err, blinker) {
+HelloApp.prototype.init = function(zetta, cb) {
+  zetta.get('blinker', function(err, blinker) {
     blinker.call('turn-on');
 
     blinker.on('turn-on', function() {
@@ -14,6 +14,6 @@ HelloApp.prototype.init = function(elroy, cb) {
       console.log('Turning PIN13 off.');
     });
 
-    elroy.expose(blinker);
+    zetta.expose(blinker);
   });
 };
