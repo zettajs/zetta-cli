@@ -2,7 +2,7 @@
   "name": "zetta",
   "version": "0.0.1",
   "description": "",
-  "main": "elroy.js",
+  "main": "zetta.js",
   "dependencies": {
     "argo": "~0.4.9",
     "titan": "~0.1.1",
