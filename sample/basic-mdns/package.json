@@ -1,24 +1,24 @@
 {
-  "name": "elroy-mdns",
+  "name": "zetta-mdns",
   "version": "0.0.0",
-  "description": "Elroy MDNS example",
+  "description": "Zetta MDNS example",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mdobson/elroy-mdns.git"
+    "url": "https://github.com/mdobson/zetta-mdns.git"
   },
   "keywords": [
-    "elroy"
+    "zetta"
   ],
   "author": "mdobs",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mdobson/elroy-mdns/issues"
+    "url": "https://github.com/mdobson/zetta-mdns/issues"
   },
-  "homepage": "https://github.com/mdobson/elroy-mdns",
+  "homepage": "https://github.com/mdobson/zetta-mdns",
   "dependencies": {
     "es6-promise": "~0.1.1",
     "request": "~2.34.0"

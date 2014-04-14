@@ -23,7 +23,7 @@ function Logger() {
     pubsub.publish('_logs', obj);
   };
 
-  this.bunyanInstance = bunyan.createLogger({ name: 'elroy', streams:[{type: 'raw', stream:stream}, {type: 'raw', stream:pumperStream}] });
+  this.bunyanInstance = bunyan.createLogger({ name: 'zetta', streams:[{type: 'raw', stream:stream}, {type: 'raw', stream:pumperStream}] });
 }
 util.inherits(Logger, EventEmitter);
 

@@ -62,7 +62,7 @@ module.exports = function run(appName){
     fog.init(function(err) {
       var apps = [app];
       fog.loadApps(apps, function() {
-        var host = process.env.ELROY_CLOUD || 'ws://elroy-cloud.herokuapp.com';
+        var host = process.env.ZETTA_CLOUD || 'ws://zetta-cloud.herokuapp.com';
         l.emit('log', 'fog-bootstrapper', 'connecting to cloud endpoint at: '+host+' via websocket');
         CloudClient(server, host, function(server){
           server.listen(3002);

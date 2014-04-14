@@ -7,7 +7,7 @@ module.exports = function(model) {
   entity.entities = model.entities.map(function(item) {
     var e = {
       'class': [ 'device' ],
-      'rel': [ 'http://elroy.io/rels/device', 'item' ],
+      'rel': [ 'http://zettajs.io/rels/device', 'item' ],
       'properties': {
         'name' : item.name
       },

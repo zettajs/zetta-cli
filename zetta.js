@@ -1,14 +1,14 @@
 var Logger = require('./logger')();
 var Scientist = require('./scientist');
 
-var Elroy = {}; 
+var Zetta = {}; 
 
-Elroy.log = function(msg, data) {
+Zetta.log = function(msg, data) {
   Logger.emit('user-log', msg, data);
 };
 
-Elroy.configure = function(/* args */) {
+Zetta.configure = function(/* args */) {
   return Scientist.configure.apply(null,arguments);
 };
 
-module.exports = Elroy;
+module.exports = Zetta;

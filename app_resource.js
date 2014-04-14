@@ -125,7 +125,7 @@ exports.create = function(loader) {
       var machine = loader.exposed[path];
       entity.entities.push({
         class: ['machine'],
-        rel: ['http://rels.elroy.io/machine'],
+        rel: ['http://rels.zettajs.io/machine'],
         properties: machine.properties,
         links: [ { rel: ['self'], href: env.helpers.url.path(path) } ]
       })

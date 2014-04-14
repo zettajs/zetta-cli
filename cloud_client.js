@@ -50,8 +50,8 @@ module.exports = function(argo, url, cb) {
   var app = argo
     .use(function(handle) {
       handle('request', function(env, next) {
-        var id = env.request.headers['elroy-message-id'];
-        env.response.setHeader('elroy-message-id', id);
+        var id = env.request.headers['zetta-message-id'];
+        env.response.setHeader('zetta-message-id', id);
 
         next(env);
       });
