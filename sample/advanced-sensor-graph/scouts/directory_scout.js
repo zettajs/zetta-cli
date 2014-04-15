@@ -18,12 +18,25 @@ DirectoryScout.prototype.init = function(next) {
     this.emit('discover', AccelDriver, id);
     id++;
   }
-
-  var ledNum = 0;
+  
+  var id = 0;
+  var barometerdriver = require('../drivers/barometer_driver');
+  while(id < 2) {
+    this.emit('discover', barometerdriver, id);
+    id++;
+  }
+  
+  var id = 0;
+  var humiditydriver = require('../drivers/humidity_driver');
+  while(id < 1) {
+    this.emit('discover', humiditydriver, id);
+    id++;
+  }
+  var id = 0;
   var LedDriver = require('../drivers/led_driver');
-  while(ledNum < 3) {
-    this.emit('discover', LedDriver, ledNum);
-    ledNum++;
+  while(id < 3) {
+    this.emit('discover', LedDriver, id);
+    id++;
   }
   next();
 };

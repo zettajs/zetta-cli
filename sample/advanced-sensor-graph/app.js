@@ -11,6 +11,20 @@ HelloApp.prototype.init = function(zetta) {
     });
 
   zetta
+    .observe('type="barometer"')
+    .subscribe(function(d) {
+      zetta.expose(d);
+    });
+
+  zetta
+    .observe('type="humidity"')
+    .subscribe(function(d) {
+      zetta.expose(d);
+    });
+
+
+
+  zetta
     .observe('type="led"')
     .subscribe(function(d) {
       zetta.expose(d);

@@ -7,8 +7,6 @@ var AccelerometerDriver = module.exports = function(id) {
   this.x = 0;
   this.y = 0;
   this.z = 0;
-  this.elevation = 0;
-  this.battery = 0;
 };
 
 AccelerometerDriver.prototype.init = function(config) {
@@ -16,8 +14,6 @@ AccelerometerDriver.prototype.init = function(config) {
     .stream('x-'+this.id, this.streamX)
     .stream('y-'+this.id, this.streamY)
     .stream('z-'+this.id, this.streamZ)
-    .stream('elevation'+this.id, this.streamElevation)
-    .stream('battery'+this.id, this.streamBattery);
 };
 
 AccelerometerDriver.prototype.streamX = function(emitter) {
