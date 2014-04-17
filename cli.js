@@ -1,16 +1,12 @@
 #!/usr/bin/env node
 
-var program = require('commander'),
-    pkg = require('./package.json'),
-    path = require('path'),
-    spawn = require('child_process').spawn,
-    argo = require('argo'),
-    titan = require('titan'),
-    siren = require('argo-formatter-siren'),
-    FogRuntime = require('./fog_runtime'),
-    CloudClient = require('./cloud_client'),
-    fs = require('fs'),
-    bootstrapper = require('./bootstrapper');
+var program = require('commander');
+var pkg = require('./package.json');
+var path = require('path');
+var spawn = require('child_process').spawn;
+var fs = require('fs');
+var ZettaRuntime = require('zetta-runtime');
+var bootstrapper = ZettaRuntime.bootstrapper;
 
 program
   .version(pkg.version)
