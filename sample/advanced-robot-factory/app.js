@@ -9,6 +9,12 @@ HelloApp.prototype.init = function(zetta) {
     .subscribe(function(d) {
       zetta.expose(d);
     });
+
+   zetta
+    .observe('type="phone"')
+    .subscribe(function(d) {
+      zetta.expose(d);
+    });
   
   zetta
     .observe('type="lcd"')

@@ -15,12 +15,12 @@ BarometerDriver.prototype.init = function(config) {
 BarometerDriver.prototype.streamPressure = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.random() * 100);
-  }, 500);
+  }, 50);
 };
 
 BarometerDriver.prototype.streamElevation = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.random() * 100);
-  }, 500);
+  }, 50);
 };
 

@@ -14,6 +14,6 @@ PhotocellDriver.prototype.init = function(config) {
 PhotocellDriver.prototype.streamlumosity = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.random() * 100);
-  }, 500);
+  }, 50);
 };
 

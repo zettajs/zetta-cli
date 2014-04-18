@@ -14,6 +14,6 @@ TemperatureDriver.prototype.init = function(config) {
 TemperatureDriver.prototype.streamTemp = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.random() * 100);
-  }, 500);
+  }, 50);
 };
 

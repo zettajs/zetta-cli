@@ -14,6 +14,6 @@ HumidityDriver.prototype.init = function(config) {
 HumidityDriver.prototype.streamHumidity = function(emitter) {
   setInterval(function() {
     emitter.emit('data', Math.random() * 100);
-  }, 500);
+  }, 50);
 };
 
