@@ -1,20 +1,11 @@
 {
   "name": "zetta",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "zetta.js",
   "dependencies": {
-    "argo": "~0.4.9",
-    "titan": "~0.1.1",
-    "argo-formatter-siren": "0.0.0",
     "commander": "~2.1.0",
-    "colors": "~0.6.2",
-    "bunyan": "~0.22.1",
-    "strftime": "~0.8.0",
-    "rx": "~2.2.15",
-    "spdy": ">=1.24.0",
-    "multiparty": "^3.2.3",
-    "argo-multiparty": "0.0.3"
+    "zetta-runtime": "*"
   },
   "devDependencies": {},
   "scripts": {
@@ -25,7 +16,7 @@
     "url": "git://github.com/zettajs/zetta.git"
   },
   "author": "",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/zettajs/zetta/issues"
   },
