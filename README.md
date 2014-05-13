@@ -1,4 +1,4 @@
-# zetta
+# ![Zetta.js](http://i.imgur.com/09p3qw1.png) 
 
 Zetta is an open source platform for the Internet of Things.
 
