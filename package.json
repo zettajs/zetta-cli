@@ -1,5 +1,5 @@
 {
-  "name": "zetta",
+  "name": "zetta-cli",
   "version": "0.0.3",
   "description": "",
   "main": "zetta.js",
